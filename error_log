@@ -1,0 +1,16 @@
+[12-Nov-2016 06:21:24 UTC] PHP Parse error:  syntax error, unexpected '[' in /home/mtsnsid2/public_html/nilai/application/modules/cetak_raport/controllers/Cetak_raport.php on line 66
+[30-Nov-2016 03:02:50 UTC] PHP Parse error:  syntax error, unexpected '[' in /home/mtsnsid2/public_html/nilai/application/modules/cetak_raport/controllers/Cetak_raport.php on line 68
+[30-Nov-2016 03:44:30 UTC] PHP Parse error:  syntax error, unexpected '[' in /home/mtsnsid2/public_html/nilai/application/modules/cetak_raport/controllers/Cetak_raport.php on line 68
+[12-Jun-2017 04:15:03 UTC] PHP Fatal error:  Call to undefined function terbilang() in /home/mtsnsid2/public_html/nilai/application/modules/cetak_raport/views/cetak_rapot.php on line 144
+[12-Jun-2017 04:15:05 UTC] PHP Fatal error:  Call to undefined function terbilang() in /home/mtsnsid2/public_html/nilai/application/modules/cetak_raport/views/cetak_rapot.php on line 144
+[12-Jun-2017 04:15:06 UTC] PHP Fatal error:  Call to undefined function terbilang() in /home/mtsnsid2/public_html/nilai/application/modules/cetak_raport/views/cetak_rapot.php on line 144
+[12-Jun-2017 04:15:07 UTC] PHP Fatal error:  Call to undefined function terbilang() in /home/mtsnsid2/public_html/nilai/application/modules/cetak_raport/views/cetak_rapot.php on line 144
+[12-Jun-2017 04:15:08 UTC] PHP Fatal error:  Call to undefined function terbilang() in /home/mtsnsid2/public_html/nilai/application/modules/cetak_raport/views/cetak_rapot.php on line 144
+[12-Jun-2017 04:15:10 UTC] PHP Fatal error:  Call to undefined function terbilang() in /home/mtsnsid2/public_html/nilai/application/modules/cetak_raport/views/cetak_rapot.php on line 144
+[12-Jun-2017 04:15:11 UTC] PHP Fatal error:  Call to undefined function terbilang() in /home/mtsnsid2/public_html/nilai/application/modules/cetak_raport/views/cetak_rapot.php on line 144
+[12-Jun-2017 04:15:15 UTC] PHP Fatal error:  Call to undefined function terbilang() in /home/mtsnsid2/public_html/nilai/application/modules/cetak_raport/views/cetak_rapot.php on line 144
+[12-Jun-2017 04:18:46 UTC] PHP Fatal error:  Call to undefined function terbilang() in /home/mtsnsid2/public_html/nilai/application/modules/cetak_raport/views/cetak_rapot.php on line 145
+[12-Jun-2017 04:18:48 UTC] PHP Fatal error:  Call to undefined function terbilang() in /home/mtsnsid2/public_html/nilai/application/modules/cetak_raport/views/cetak_rapot.php on line 145
+[17-Jun-2017 10:19:14 Asia/Jakarta] PHP Parse error:  syntax error, unexpected T_VARIABLE in /home/mtsnsid2/public_html/nilai/application/modules/cetak_leger/controllers/Cetak_leger.php on line 23
+[17-Jun-2017 10:19:32 Asia/Jakarta] PHP Parse error:  syntax error, unexpected '(' in /home/mtsnsid2/public_html/nilai/application/modules/cetak_leger/controllers/Cetak_leger.php on line 23
+[17-Jun-2017 10:19:33 Asia/Jakarta] PHP Parse error:  syntax error, unexpected '(' in /home/mtsnsid2/public_html/nilai/application/modules/cetak_leger/controllers/Cetak_leger.php on line 23
