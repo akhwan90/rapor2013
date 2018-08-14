@@ -1,3 +1,6 @@
+# Demo 
+https://infosa-media.net/nilai/login
+
 # Aplikasi Rapor Kurikulum 2013 Web
 Aplikasi ini digunakan untuk mengelola raport, dari mulai input data siswa, guru, mata pelajaran, input nilai dan lain sebagainya. Kebanyakan yang hadir selama ini, aplikasi raport kurikulum 2013 adalah memakai file excel, yang sepertinya kurang praktis, dan sulit untuk digunakan secara multi user dalam waktu bersamaan. Tetapi dengan aplikasi berbasis web ini, aplikasi dapat dipakai oleh banyak user dalam waktu yang bersamaan, dan dari mana saja, dalam kondisi apa saja, misal sambil tiduran, sambil di WC, dan lainnya (asalkan ada internet dan sudah dihosting :D). Artinya, guru bisa menginput nilai siswa secara bersamaan. Dan satu lagi, kelebihan aplikasi ini, tersedia berbagai macam fitur import, dari import data siswa, import data nilai pengetahuan, nilai keterampilan, dll.
 
