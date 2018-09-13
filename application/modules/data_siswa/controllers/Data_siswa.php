@@ -110,7 +110,7 @@ class Data_siswa extends CI_Controller {
 
         $data['nis'] = $p['nis'];
         $data['nisn'] = $p['nisn'];
-        $data['nama'] = $p['nama'];
+        $data['nama'] = addslashes($p['nama']);
         $data['jk'] = $p['jk'];
         $data['tmp_lahir'] = $p['tmp_lahir'];
         $data['tgl_lahir'] = $p['tgl_lahir'];
@@ -229,7 +229,7 @@ class Data_siswa extends CI_Controller {
             for ($b = 2; $b < 500; $b++) {
                 $nis = $_sheet->getCell('A'.$b)->getCalculatedValue();
                 $nisn = $_sheet->getCell('B'.$b)->getCalculatedValue();
-                $nama = $_sheet->getCell('C'.$b)->getCalculatedValue();
+                $nama = addslashes($_sheet->getCell('C'.$b)->getCalculatedValue());
                 $jk = $_sheet->getCell('D'.$b)->getCalculatedValue();
                 $tmp_lahir = $_sheet->getCell('E'.$b)->getCalculatedValue();
                 $tgl_lahir = $_sheet->getCell('F'.$b)->getCalculatedValue();
