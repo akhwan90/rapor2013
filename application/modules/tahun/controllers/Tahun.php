@@ -68,13 +68,19 @@ class Tahun extends CI_Controller {
             $d['data']['id'] = "";
             $d['data']['mode'] = "add";
             $d['data']['tahun'] = "";
+            $d['data']['semester'] = "";
             $d['data']['aktif'] = "";
             $d['data']['nama_kepsek'] = "";
             $d['data']['nip_kepsek'] = "";
             $d['data']['tgl_raport'] = "";
             $d['data']['tgl_raport_kelas3'] = "";
         } else {
+            $tahun = substr($q['tahun'], 0, 4);
+            $semester = substr($q['tahun'], 4,1);
+
             $d['data'] = $q;
+            $d['data']['tahun'] = $tahun;
+            $d['data']['semester'] = $semester;
         }
 
         j($d);
@@ -87,21 +93,40 @@ class Tahun extends CI_Controller {
         $d['data'] = "";
 
         if ($p['_mode'] == "add") {
-            $cek_sudah_ada = $this->db->query("SELECT tahun FROM tahun WHERE tahun = '".$p['tahun']."'")->num_rows();
+            $cek_sudah_ada = $this->db->query("SELECT tahun FROM tahun WHERE tahun = '".$p['tahun'].$p['semester']."'")->num_rows();
 
             if ($cek_sudah_ada > 0) {
                 $d['status'] = "gagal";
-                $d['data'] = "Data '".$p['tahun']."' ini sudah ada"; 
+                $d['data'] = "Data '".$p['tahun'].$p['semester']."' ini sudah ada"; 
             } else {
-                $this->db->query("INSERT INTO tahun (tahun, aktif, nama_kepsek, nip_kepsek, tgl_raport, tgl_raport_kelas3) VALUES ('".$p['tahun']."','N','".$p['nama_kepsek']."', '".$p['nip_kepsek']."', '".$p['tgl_raport']."', '".$p['tgl_raport_kelas3']."')");            
+                $this->db->query("INSERT INTO tahun (tahun, aktif, nama_kepsek, nip_kepsek, tgl_raport, tgl_raport_kelas3) VALUES ('".$p['tahun'].$p['semester']."','N','".$p['nama_kepsek']."', '".$p['nip_kepsek']."', '".$p['tgl_raport']."', '".$p['tgl_raport_kelas3']."')");            
                 $d['status'] = "ok";
                 $d['data'] = "Data berhasil disimpan";
             }
         } else if ($p['_mode'] == "edit") {
-            $this->db->query("UPDATE tahun SET tahun = '".$p['tahun']."', nama_kepsek = '".$p['nama_kepsek']."', nip_kepsek = '".$p['nip_kepsek']."', tgl_raport = '".$p['tgl_raport']."', tgl_raport_kelas3 = '".$p['tgl_raport_kelas3']."'  WHERE id = '".$p['_id']."'");
+            $cek_sudah_ada = $this->db->query("SELECT tahun FROM tahun WHERE tahun = '".$p['tahun'].$p['semester']."'");
+            $j_sdh_ada = $cek_sudah_ada->num_rows();
+            $d_sdh_ada = $cek_sudah_ada->row_array();
+            $cek_yg_ini = $this->db->query("SELECT tahun FROM tahun WHERE id = '".$p['_id']."'")->row_array();
 
-            $d['status'] = "ok";
-            $d['data'] = "Data berhasil disimpan";
+            if ($j_sdh_ada > 0) {
+
+                if ($cek_yg_ini['tahun'] == $p['tahun'].$p['semester']) {
+                    $this->db->query("UPDATE tahun SET tahun = '".$p['tahun'].$p['semester']."', nama_kepsek = '".$p['nama_kepsek']."', nip_kepsek = '".$p['nip_kepsek']."', tgl_raport = '".$p['tgl_raport']."', tgl_raport_kelas3 = '".$p['tgl_raport_kelas3']."'  WHERE id = '".$p['_id']."'");
+
+                    $d['status'] = "ok";
+                    $d['data'] = "Data berhasil disimpan";
+                } else {
+                    $d['status'] = "gagal";
+                    $d['data'] = "Data '".$p['tahun'].$p['semester']."' ini sudah ada"; 
+                }
+
+            } else {
+                $this->db->query("UPDATE tahun SET tahun = '".$p['tahun'].$p['semester']."', nama_kepsek = '".$p['nama_kepsek']."', nip_kepsek = '".$p['nip_kepsek']."', tgl_raport = '".$p['tgl_raport']."', tgl_raport_kelas3 = '".$p['tgl_raport_kelas3']."'  WHERE id = '".$p['_id']."'");
+
+                $d['status'] = "ok";
+                $d['data'] = "Data berhasil disimpan";
+            }
         } else {
             $d['status'] = "gagal";
             $d['data'] = "Kesalahan sistem";
@@ -133,6 +158,15 @@ class Tahun extends CI_Controller {
 
     public function index() {
     	$this->d['p'] = "list";
+        
+        $this->d['p_semester'] = array("1"=>"Satu","2"=>"Dua");
+        $this->d['p_tahun'] = array();
+
+        for ($i = (date('Y') - 4); $i <= (date('Y') + 4); $i++) {
+            $idx = $i;
+            $this->d['p_tahun'][$idx] = $i;
+        }
+
         $this->load->view("template_utama", $this->d);
     }
 
