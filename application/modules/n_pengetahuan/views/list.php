@@ -30,23 +30,8 @@
                     <a href="#" onclick="return edit(0);" class="btn btn-info"><i class="fa fa-plus-circle"></i> Tambah KD</a>
                 </p>
                 <ul class="list-group" id="list_kd">
-                    <?php 
-                    if (!empty($list_kd)) {
-                        foreach ($list_kd as $lk) {
-                    ?>
-                    <li class="list-group-item">
-                        <a href="#" onclick="return view_kd(<?php echo $lk['id'].", ".$detil_mp['id_kelas']; ?>);"><?php echo "(".$lk['no_kd'].") ".$lk['nama_kd'].""; ?></a> 
-                        <div class="pull-right">
-                            <a href="#" onclick="return edit(<?php echo $lk['id']; ?>);" class="btn btn-xs btn-success"><i class="fa fa-pencil"></i></a>
-                            <a href="#" onclick="return hapus(<?php echo $lk['id']; ?>);" class="btn btn-xs btn-danger"><i class="fa fa-remove"></i></a>
-                        </div>
-                    </li>
-                    <?php 
-                        }
-                    } else {
-                        echo '<div class="alert alert-info">Belum ada KD diinputkan</div>';
-                    }
-                    ?>
+                    <div id="list_kd_2" style="margin-bottom: 10px"></div>
+                    
                     <li class="list-group-item" onclick="return view_kd(<?php echo $detil_mp['id_mapel'].", ".$detil_mp['id_kelas']; ?>,'t');"><a href="#"><i class="fa fa-chevron-right"></i>  ULANGAN TENGAH SEMESTER</a></li>
                     <li class="list-group-item" onclick="return view_kd(<?php echo $detil_mp['id_mapel'].", ".$detil_mp['id_kelas']; ?>,'a');"><a href="#"><i class="fa fa-chevron-right"></i>  ULANGAN AKHIR SEMESTER</a></li>
                 </ul>
@@ -114,6 +99,8 @@
     id_guru_mapel = <?php echo $this->uri->segment(3); ?>;
     $(document).on("ready", function() {
         view_kd(0,0);
+        list_kd();
+
         $('#list_kd li').on('click', function(){
             $('li.active').removeClass('active');
             $(this).addClass('active');
@@ -204,7 +191,7 @@
                     url: base_url+"set_kd/hapus/"+id,
                     success: function(data) {
                         noti("success", "Berhasil dihapus...!");
-                        window.location.assign(base_url+"n_pengetahuan/index/"+id_guru_mapel);
+                        list_kd();
                     }
                 });                
             }
@@ -228,10 +215,32 @@
                 } else {
                     $("#modal_data").modal('hide');
                     noti("success", r.data);
-                    window.location.assign(base_url+"n_pengetahuan/index/"+id_guru_mapel);
+                    list_kd();
                 }
             }
         });
         return false;
+    }
+
+    function list_kd() {
+        $.ajax({
+            type: "GET",
+            url: base_url+"n_pengetahuan/list_kd/"+id_guru_mapel,
+            beforeSend: function() {
+                $("#list_kd_2").html('<i class="fa fa-spin fa-spinner"></i> Loading');
+            },
+            success: function(data) {
+                var h = '';
+                if (data.length > 0) {
+                    $.each(data, function (i, v) {
+                        h += '<li class="list-group-item"><a href="#" onclick="return view_kd('+v.id+', <?=$detil_mp['id_kelas'];?>);">('+v.no_kd+') '+v.nama_kd+'</a><div class="pull-right"><a href="#" onclick="return edit('+v.id+');" class="btn btn-xs btn-success"><i class="fa fa-pencil"></i> </a><a href="#" onclick="return hapus('+v.id+');" class="btn btn-xs btn-danger"><i class="fa fa-remove"></i> </a></div></li>';
+                    });
+                } else {
+                    h += '<div class="alert alert-info">KD Belum satupun diinputkan</div>';
+                }
+
+                $("#list_kd_2").html(h);
+            }
+        });   
     }
 </script>
