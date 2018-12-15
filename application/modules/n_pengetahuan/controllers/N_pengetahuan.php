@@ -896,4 +896,22 @@ class N_pengetahuan extends CI_Controller {
     	$this->d['p'] = "list";
         $this->load->view("template_utama", $this->d);
     }
+
+    public function list_kd($id) {
+        $this->d['detil_mp'] = $this->db->query("SELECT 
+                                        a.*, b.nama nmmapel, c.nama nmkelas, c.tingkat tingkat
+                                        FROM t_guru_mapel a
+                                        INNER JOIN m_mapel b ON a.id_mapel = b.id 
+                                        INNER JOIN m_kelas c ON a.id_kelas = c.id 
+                                        WHERE a.id  = '$id'")->row_array();
+        $this->d['list_kd'] = $this->db->query("SELECT * FROM t_mapel_kd 
+                                    WHERE id_guru = '".$this->d['detil_mp']['id_guru']."'
+                                    AND id_mapel = '".$this->d['detil_mp']['id_mapel']."'
+                                    AND tingkat = '".$this->d['detil_mp']['tingkat']."'
+                                    AND semester = '".$this->d['semester']."'
+                                    AND jenis = 'P'")->result_array();
+
+        j($this->d['list_kd']);
+        exit;
+    }
 }
