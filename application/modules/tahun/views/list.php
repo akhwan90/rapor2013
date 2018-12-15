@@ -46,7 +46,13 @@
                 <div class="form-group">
                     <label for="tahun" class="col-sm-3 control-label">Tahun</label>
                     <div class="col-sm-9">
-                        <input type="text" name="tahun"  class="form-control" id="tahun" required>
+                        <?=form_dropdown('tahun',$p_tahun,'','class="form-control" id="tahun" required'); ?>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="tahun" class="col-sm-3 control-label">Semester</label>
+                    <div class="col-sm-9">
+                        <?=form_dropdown('semester',$p_semester,'','class="form-control" id="semester" required'); ?>
                     </div>
                 </div>
                 <div class="form-group">
@@ -133,6 +139,7 @@
             success: function(data) {
                 $("#_id").val(data.data.id);
                 $("#tahun").val(data.data.tahun);
+                $("#semester").val(data.data.semester);
                 $("#nama_kepsek").val(data.data.nama_kepsek);
                 $("#nip_kepsek").val(data.data.nip_kepsek);
                 $("#tgl_raport").val(data.data.tgl_raport);
