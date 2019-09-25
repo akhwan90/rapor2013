@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-$config['base_url'] = 'http://localhost/nilai/';
+$config['base_url'] = 'http://localhost/rapor2013/';
 
 // =================
 // Config tambahan 
