@@ -2,8 +2,7 @@
 # Aplikasi Raport Kurikulum 2013
 
 ### Demo Aplikasi
-- Alamat: http://infosa-media.net/nilai
-- Level Administrator, username: admin, password: super90
+- belum ready
 
 ### Petunjuk Install
 1. Download aplikasi
