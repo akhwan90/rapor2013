@@ -72,7 +72,7 @@ class Data_mapel extends CI_Controller {
         $d['data'] = "";
 
         if ($p['_mode'] == "add") {
-            $this->db->query("INSERT INTO m_mapel (kelompok, nama, kd_singkat) VALUES ('".$p['nama']."', '".$p['kode_singkat']."')");
+            $this->db->query("INSERT INTO m_mapel (kelompok, nama, kd_singkat) VALUES ('".$p['kelompok']."','".$p['nama']."', '".$p['kd_singkat']."')");
 
             $d['status'] = "ok";
             $d['data'] = "Data berhasil disimpan";
