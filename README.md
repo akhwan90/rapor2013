@@ -4,6 +4,9 @@
 ### Demo Aplikasi
 - belum ready
 
+### Petunjuk Download
+- Mohon download pada bagian `release` saja, jika menggunakan `clone or download` dikhawatirkan terjadi error, karena belum stabil di pengembangan
+
 ### Petunjuk Install
 1. Download aplikasi
 2. Buat database, import dari folder `__db`
