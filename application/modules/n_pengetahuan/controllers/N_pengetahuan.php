@@ -1,23 +1,19 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', TRUE);
-ini_set('display_startup_errors', TRUE);
-
 defined('BASEPATH') OR exit('No direct script access allowed');
-class N_pengetahuan extends CI_Controller {
+require_once(APPPATH . "controllers/Master.php");
+
+class N_pengetahuan extends Master {
 	function __construct() {
         parent::__construct();
-        $this->sespre = $this->config->item('session_name_prefix');
-        $this->d['admlevel'] = $this->session->userdata($this->sespre.'level');
-        $this->d['admkonid'] = $this->session->userdata($this->sespre.'konid');
+        cek_aktif();
+
+
+        $akses = array("guru");
+        cek_hak_akses($this->d['s']['level'], $akses);
+
         $this->d['url'] = "n_pengetahuan";
         $this->d['idnya'] = "setmapel";
         $this->d['nama_form'] = "f_setmapel";
-        $get_tasm = $this->db->query("SELECT tahun FROM tahun WHERE aktif = 'Y'")->row_array();
-        $this->d['tasm'] = $get_tasm['tahun'];
-        $this->d['semester'] = substr($this->d['tasm'], -1, 1);
-
-        $this->d['tahun'] = substr($this->d['tasm'], 0, 4);
 
         $this->kolom_xl = array("A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z");
         $this->d['id_guru_mapel'] = 0;
@@ -883,7 +879,7 @@ class N_pengetahuan extends CI_Controller {
                                     WHERE id_guru = '".$this->d['detil_mp']['id_guru']."'
                                     AND id_mapel = '".$this->d['detil_mp']['id_mapel']."'
                                     AND tingkat = '".$this->d['detil_mp']['tingkat']."'
-                                    AND semester = '".$this->d['semester']."'
+                                    AND semester = '".$this->d['c']['ta_semester']."'
                                     AND jenis = 'P'")->result_array();
                                     
         //echo $this->db->last_query();
@@ -908,7 +904,7 @@ class N_pengetahuan extends CI_Controller {
                                     WHERE id_guru = '".$this->d['detil_mp']['id_guru']."'
                                     AND id_mapel = '".$this->d['detil_mp']['id_mapel']."'
                                     AND tingkat = '".$this->d['detil_mp']['tingkat']."'
-                                    AND semester = '".$this->d['semester']."'
+                                    AND semester = '".$this->d['c']['ta_semester']."'
                                     AND jenis = 'P'")->result_array();
 
         j($this->d['list_kd']);

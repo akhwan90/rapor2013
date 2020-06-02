@@ -15,6 +15,8 @@ class Cetak_raport extends CI_Controller {
         $this->d['ta'] = substr($get_tasm['tahun'],0,4);
 
         $this->d['wk'] = $this->session->userdata('app_rapot_walikelas');   
+        
+        cek_aktif();
     }
 
     public function sampul1($id_siswa) {

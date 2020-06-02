@@ -13,6 +13,8 @@ class N_absensi extends CI_Controller {
         $wali = $this->session->userdata($this->sespre."walikelas");
         $this->d['id_kelas'] = $wali['id_walikelas'];
         $this->d['nama_kelas'] = $wali['nama_walikelas'];
+
+        cek_aktif();
     }
     public function cetak($bawa) {
         $this->d['data_nilai'] = $this->db->query("SELECT

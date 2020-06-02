@@ -1,12 +1,11 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
+require_once(APPPATH . "controllers/Master.php");
 
-class Unauthorized_access extends CI_Controller {
+class Unauthorized_access extends Master {
 	function __construct() {
         parent::__construct();
-        $this->sespre = $this->config->item('session_name_prefix');
-        $this->d['admlevel'] = $this->session->userdata($this->sespre.'level');
-               
+        cek_aktif();
     }
 
     public function index() {

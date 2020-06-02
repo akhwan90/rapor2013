@@ -1,12 +1,15 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
+require_once(APPPATH . "controllers/Master.php");
 
-class Data_siswa extends CI_Controller {
+class Data_siswa extends Master {
     function __construct() {
         parent::__construct();
-        $this->sespre = $this->config->item('session_name_prefix');
+        cek_aktif();
 
-        $this->d['admlevel'] = $this->session->userdata($this->sespre.'level');
+        $akses = array("admin");
+        cek_hak_akses($this->d['s']['level'], $akses);
+
         $this->d['url'] = "data_siswa";
         $this->d['idnya'] = "datasiswa";
         $this->d['nama_form'] = "f_datasiswa";
@@ -38,7 +41,7 @@ class Data_siswa extends CI_Controller {
             $link_aktif_user = $d['jml_aktif'] > 0 ? '' : '<a href="#" onclick="return aktifkan(\''.$d['id'].'\');" class="btn btn-xs btn-info"><i class="fa fa-user"></i> Aktifkan User</a>';
 
             $data_ok[3] = '<a href="'.base_url().$this->d['url'].'/edit/'.$d['id'].'" class="btn btn-xs btn-success"><i class="fa fa-edit"></i> Edit</a>
-                '.$link_aktif_user.'
+                '.'
                 <a href="#" onclick="return hapus(\''.$d['id'].'\');" class="btn btn-xs btn-danger"><i class="fa fa-remove"></i> Hapus</a> ';
 
             $data[] = $data_ok;

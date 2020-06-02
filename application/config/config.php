@@ -21,6 +21,12 @@ $config['nama_sekolah'] = "MTs Negeri 5 Kulon Progo";
 $config['alamat_sekolah'] = "Sumoroto, Sidoharjo, Samigaluh";
 $config['kota_sekolah'] = "Kulon Progo";
 
+$config['p_tingkat'] = [
+    '7'=>'Kelas 7',
+    '8'=>'Kelas 8',
+    '9'=>'Kelas 9'
+];
+
 
 
 
@@ -392,7 +398,7 @@ $config['encryption_key'] = 'Akhwan90';
 |
 */
 $config['sess_driver'] = 'files';
-$config['sess_cookie_name'] = 'ci_session';
+$config['sess_cookie_name'] = 'app_raport';
 $config['sess_expiration'] = 7200;
 $config['sess_save_path'] = NULL;
 $config['sess_match_ip'] = FALSE;

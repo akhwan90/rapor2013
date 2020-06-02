@@ -15,6 +15,7 @@ class Cetak_kartu extends CI_Controller {
         $this->d['id_kelas'] = $wali['id_walikelas'];
         $this->d['nama_kelas'] = $wali['nama_walikelas'];
         
+        cek_aktif();
     }
     public function index() {
         $queri = $this->db->query("SELECT 

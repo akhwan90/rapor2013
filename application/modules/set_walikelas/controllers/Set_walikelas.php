@@ -1,18 +1,18 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
+require_once(APPPATH . "controllers/Master.php");
 
-class Set_walikelas extends CI_Controller {
+class Set_walikelas extends Master {
 	function __construct() {
         parent::__construct();
-        $this->sespre = $this->config->item('session_name_prefix');
+        cek_aktif();
 
-        $this->d['admlevel'] = $this->session->userdata($this->sespre.'level');
+        $akses = array("admin");
+        cek_hak_akses($this->d['s']['level'], $akses);
+
         $this->d['url'] = "set_walikelas";
         $this->d['idnya'] = "setwalikelas";
         $this->d['nama_form'] = "f_setwalikelas";
-
-        $get_tasm = $this->db->query("SELECT tahun FROM tahun WHERE aktif = 'Y'")->row_array();
-        $this->d['tasm'] = substr($get_tasm['tahun'],0,4);
     }
 
     public function datatable() {
@@ -22,14 +22,14 @@ class Set_walikelas extends CI_Controller {
         $search = $this->input->post('search');
 
         $d_total_row = $this->db->query("SELECT id FROM t_walikelas a
-                                        WHERE a.tasm = '".$this->d['tasm']."'
+                                        WHERE a.tasm = '".$this->d['c']['ta_tasm']."'
                                         ORDER BY id ASC")->num_rows();
     
         $q_datanya = $this->db->query("SELECT a.id, b.nama nmguru, c.nama nmkelas
                                     FROM t_walikelas a
                                     INNER JOIN m_guru b ON a.id_guru = b.id
                                     INNER JOIN m_kelas c ON a.id_kelas = c.id
-                                    WHERE (a.tasm = '".$this->d['tasm']."') AND (
+                                    WHERE (a.tasm = '".$this->d['c']['ta_tasm']."') AND (
                                     b.nama LIKE '%".$search['value']."%'
                                     OR c.nama LIKE '%".$search['value']."%')
                                     ORDER BY a.id ASC
@@ -84,13 +84,13 @@ class Set_walikelas extends CI_Controller {
 
 
         if ($p['_mode'] == "add") {
-            $cek = $this->db->query("SELECT id FROM t_walikelas WHERE id_kelas = '".$p['id_kelas']."' AND tasm = '".$this->d['tasm']."'")->num_rows();
+            $cek = $this->db->query("SELECT id FROM t_walikelas WHERE id_kelas = '".$p['id_kelas']."' AND tasm = '".$this->d['c']['ta_tasm']."'")->num_rows();
 
             if ($cek > 0) {
                 $d['status'] = "gagal";
                 $d['data'] = "Kelas tersebut sudah ada walinya..";                
             } else {
-                $this->db->query("INSERT INTO t_walikelas (tasm, id_guru, id_kelas) VALUES ('".$this->d['tasm']."', '".$p['id_guru']."', '".$p['id_kelas']."')");
+                $this->db->query("INSERT INTO t_walikelas (tasm, id_guru, id_kelas) VALUES ('".$this->d['c']['ta_tasm']."', '".$p['id_guru']."', '".$p['id_kelas']."')");
 
                 $d['status'] = "ok";
                 $d['data'] = "Data berhasil disimpan";

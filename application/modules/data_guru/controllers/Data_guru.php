@@ -1,22 +1,20 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
+require_once(APPPATH . "controllers/Master.php");
 
-class Data_guru extends CI_Controller {
+class Data_guru extends Master {
 	function __construct() {
         parent::__construct();
-        $this->sespre = $this->config->item('session_name_prefix');
+        cek_aktif();
 
-        $this->d['admlevel'] = $this->session->userdata($this->sespre.'level');
+        $akses = array("admin");
+        cek_hak_akses($this->d['s']['level'], $akses);
+
+
         $this->d['url'] = "data_guru";
         $this->d['idnya'] = "dataguru";
         $this->d['nama_form'] = "f_dataguru";
-
-        $akses = array("admin");
-
-        if (!cek_hak_akses($this->d['admlevel'], $akses)) {
-            redirect('unauthorized_access');
-        }
-        
+    
     }
 
     public function datatable() {
@@ -28,12 +26,12 @@ class Data_guru extends CI_Controller {
         $d_total_row = $this->db->query("SELECT id FROM m_guru")->num_rows();
     
         $qdata = $this->db->query("SELECT 
-                                        a.*,
-                                        (SELECT COUNT(id) FROM m_admin WHERE level = 'guru' AND konid = a.id) AS jml_aktif,
-                                        b.username
-                                        FROM m_guru a
-                                        LEFT JOIN m_admin b ON CONCAT('guru',a.id) = CONCAT(b.level,b.konid) 
-                                        WHERE a.nama LIKE '%".$search['value']."%' ORDER BY a.nama ASC LIMIT ".$start.", ".$length."");
+                                    a.*,
+                                    (SELECT COUNT(id) FROM m_admin WHERE level = 'guru' AND konid = a.id) AS jml_aktif,
+                                    b.username
+                                    FROM m_guru a
+                                    LEFT JOIN m_admin b ON CONCAT('guru',a.id) = CONCAT(b.level,b.konid) 
+                                    WHERE a.nama LIKE '%".$search['value']."%' ORDER BY a.nama ASC LIMIT ".$start.", ".$length."");
         $q_datanya = $qdata->result_array();
         $j_datanya = $qdata->num_rows();
 
@@ -56,11 +54,12 @@ class Data_guru extends CI_Controller {
         }
 
         $json_data = array(
-                    "draw" => $draw,
-                    "iTotalRecords" => $j_datanya,
-                    "iTotalDisplayRecords" => $d_total_row,
-                    "data" => $data
-                );
+            "draw" => $draw,
+            "iTotalRecords" => $j_datanya,
+            "iTotalDisplayRecords" => $d_total_row,
+            "data" => $data
+        );
+        
         j($json_data);
         exit;
     }

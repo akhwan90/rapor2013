@@ -3,6 +3,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class N_ekstra extends CI_Controller {
 	function __construct() {
         parent::__construct();
+        cek_aktif();
+
+
         $this->sespre = $this->config->item('session_name_prefix');
         $this->d['admlevel'] = $this->session->userdata($this->sespre.'level');
         $this->d['admkonid'] = $this->session->userdata($this->sespre.'konid');

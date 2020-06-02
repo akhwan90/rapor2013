@@ -12,7 +12,9 @@ class Lihat_raport extends CI_Controller {
 
         $get_tasm = $this->db->query("SELECT tahun FROM tahun WHERE aktif = 'Y'")->row_array();
         $this->d['tasm'] = $get_tasm['tahun'];
-        $this->d['ta'] = '2016';
+        $this->d['ta'] = substr($get_tasm['tahun'], 0, 4);
+
+        cek_aktif();
     }
 
     public function sampul1($id_siswa) {

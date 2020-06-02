@@ -1,12 +1,15 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
+require_once(APPPATH . "controllers/Master.php");
 
-class Data_kelas extends CI_Controller {
+class Data_kelas extends Master {
 	function __construct() {
         parent::__construct();
-        $this->sespre = $this->config->item('session_name_prefix');
+        cek_aktif();
 
-        $this->d['admlevel'] = $this->session->userdata($this->sespre.'level');
+        $akses = array("admin");
+        cek_hak_akses($this->d['s']['level'], $akses);
+
         $this->d['url'] = "data_kelas";
         $this->d['idnya'] = "datakelas";
         $this->d['nama_form'] = "f_datakelas";

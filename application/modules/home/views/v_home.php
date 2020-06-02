@@ -4,13 +4,13 @@
     </div>
     <div class="content">
         <?php 
-        $wali_kelas = $this->session->userdata('app_rapot_walikelas');
+        $wali_kelas = $s['walikelas'];
         $is_wali = $wali_kelas['is_wali'];
         ?>
         <div style="display: inline; float: left"><i class="fa fa-user fa-5x"></i></div> 
         <div style="display: inline; float: left; margin-left: 50px; margin-top: 5px">
-            Nama <b>: <?php echo $this->session->userdata('app_rapot_nama'); ?></b><br>
-            NIP <b>: <?php echo $this->session->userdata('app_rapot_nip'); ?></b><br>
+            Nama <b>: <?php echo $this->session->userdata('nama'); ?></b><br>
+            NIP <b>: <?php echo $this->session->userdata('nip'); ?></b><br>
             Wali Kelas <b>: <?php echo $wali = $is_wali == true ? "Ya, kelas : ".$wali_kelas['nama_walikelas'] : "Tidak"; ?></b><br>
         </div>
     </div>

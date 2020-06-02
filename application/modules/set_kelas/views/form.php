@@ -24,9 +24,10 @@
                         </select>
                     </div>
                 </div>
-                <div class="">
+                <div class="row">
                     <div class="col-md-12">
-                        <label>Pilih Siswa (*) Untuk memilih satu persatu, gunakan Ctrl+Klik, Untuk memilih Semua gunakan Ctrl+A</label>
+                        <label>Pilih siswa di sebelah kiri, kemudian pindahkan ke sebelah kanan, dengan klik tombol panah.</label>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-md-4">
@@ -66,6 +67,12 @@
 <script type="text/javascript">
     $(document).on("ready", function() {
         $('#siswa_semua').pairMaster();
+
+        $('option').mousedown(function(e) {
+            e.preventDefault();
+            $(this).prop('selected', !$(this).prop('selected'));
+            return false;
+        });
 
         $('#tambah').click(function(){
             $('#siswa_semua').addSelected('#siswa_pilih');

@@ -1,72 +1,25 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
+require_once(APPPATH . "controllers/Master.php");
 
-class Set_kelas extends CI_Controller {
+class Set_kelas extends Master {
 	function __construct() {
         parent::__construct();
-        $this->sespre = $this->config->item('session_name_prefix');
+        cek_aktif();
 
-        $this->d['admlevel'] = $this->session->userdata($this->sespre.'level');
+        $akses = array("admin");
+        cek_hak_akses($this->d['s']['level'], $akses);
+
         $this->d['url'] = "set_kelas";
         $this->d['idnya'] = "setkelas";
         $this->d['nama_form'] = "f_setkelas";
 
-        $get_tasm = $this->db->query("SELECT tahun FROM tahun WHERE aktif = 'Y'")->row_array();
-        $this->d['tasm'] = $get_tasm['tahun'];
-        $this->d['ta'] = substr($this->d['tasm'], 0, 4);
-
-        //echo $this->d['ta'];
-        //exit;
-    }
-
-    public function datatable() {
-        $start = $this->input->post('start');
-        $length = $this->input->post('length');
-        $draw = $this->input->post('draw');
-        $search = $this->input->post('search');
-
-        $d_total_row = $this->db->query("SELECT 
-                                        a.id, b.nama nmkelas, c.nama nmsiswa
-                                        FROM t_kelas_siswa a
-                                        INNER JOIN m_kelas b ON a.id_kelas = b.id
-                                        INNER JOIN m_siswa c ON a.id_siswa = c.id
-                                        ORDER BY nmkelas ASC, nmsiswa ASC")->num_rows();
-    
-        $q_datanya = $this->db->query("SELECT 
-                                    a.id, b.nama nmkelas, c.nama nmsiswa
-                                    FROM t_kelas_siswa a
-                                    INNER JOIN m_kelas b ON a.id_kelas = b.id
-                                    INNER JOIN m_siswa c ON a.id_siswa = c.id
-                                    WHERE c.nama LIKE '%".$search['value']."%' 
-                                    ORDER BY nmkelas ASC, nmsiswa ASC LIMIT ".$start.", ".$length."")->result_array();
-        $data = array();
-        $no = ($start+1);
-
-        foreach ($q_datanya as $d) {
-            $data_ok = array();
-            $data_ok[0] = $no++;
-            $data_ok[1] = $d['nmkelas'];
-            $data_ok[2] = $d['nmsiswa'];
-
-            $data_ok[3] = '<a href="#" onclick="return hapus(\''.$d['id'].'\');" class="btn btn-xs btn-danger"><i class="fa fa-remove"></i> Hapus</a> ';
-
-            $data[] = $data_ok;
-        }
-
-        $json_data = array(
-                    "draw" => $draw,
-                    "iTotalRecords" => $d_total_row,
-                    "iTotalDisplayRecords" => $d_total_row,
-                    "data" => $data
-                );
-        j($json_data);
-        exit;
     }
 
     public function edit($id) {
         $q = $this->db->query("SELECT id, nama FROM m_siswa a 
-                                WHERE YEAR(a.diterima_tgl) > 2015 AND stat_data = 'A' AND a.id NOT IN 
-                                (SELECT id_siswa FROM t_kelas_siswa WHERE ta = ".$this->d['ta'].") 
+                                WHERE stat_data = 'A' AND a.id NOT IN 
+                                (SELECT id_siswa FROM t_kelas_siswa WHERE ta = ".$this->d['c']['ta_tahun'].") 
                                 ORDER BY id ASC");
         $r = $this->db->query("SELECT * FROM m_kelas ORDER BY tingkat ASC, nama ASC");
 
@@ -82,7 +35,7 @@ class Set_kelas extends CI_Controller {
 
         $teks_val = array();
         foreach ($p['siswa_pilih'] as $s) {
-            $teks_val[] = "('".$p['kelas']."', '".$s."', '".date('Y')."')";
+            $teks_val[] = "('".$p['kelas']."', '".$s."', '".$this->d['c']['ta_tahun']."')";
         }
 
         $query = "INSERT IGNORE INTO t_kelas_siswa (id_kelas, id_siswa, ta) VALUES ".implode(", ", $teks_val).";";
@@ -92,16 +45,45 @@ class Set_kelas extends CI_Controller {
     }
 
     public function hapus($id) {
-        $this->db->query("DELETE FROM t_kelas_siswa WHERE id = '$id'");
-        $this->db->query("DELETE FROM t_nilai WHERE id_siswa = '$id' AND tasm = '".$this->d['tasm']."'");
-        $this->db->query("DELETE FROM t_nilai_absensi WHERE id_siswa = '$id' AND tasm = '".$this->d['tasm']."'");
-        $this->db->query("DELETE FROM t_nilai_ekstra WHERE id_siswa = '$id' AND tasm = '".$this->d['tasm']."'");
-        $this->db->query("DELETE FROM t_nilai_ket WHERE id_siswa = '$id' AND tasm = '".$this->d['tasm']."'");
-        $this->db->query("DELETE FROM t_nilai_sikap_so WHERE id_siswa = '$id' AND tasm = '".$this->d['tasm']."'");
-        $this->db->query("DELETE FROM t_nilai_sikap_sp WHERE id_siswa = '$id' AND tasm = '".$this->d['tasm']."'");
+        // cek_siswa nilai
+        $this->db->where('id_siswa', $id);
+        $this->db->where('LEFT(tasm,4)', $this->d['c']['ta_tahun']);
+        $get_sdh_ada_nilai_p = $this->db->get('t_nilai')->num_rows();
 
-        $d['status'] = "ok";
-        $d['data'] = "Data berhasil dihapus";
+        $this->db->where('id_siswa', $id);
+        $this->db->where('LEFT(tasm,4)', $this->d['c']['ta_tahun']);
+        $get_sdh_ada_nilai_ket = $this->db->get('t_nilai_ket')->num_rows();
+
+        $this->db->where('id_siswa', $id);
+        $this->db->where('LEFT(tasm,4)', $this->d['c']['ta_tahun']);
+        $get_sdh_ada_nilai_sso = $this->db->get('t_nilai_sikap_so')->num_rows();
+
+        $this->db->where('id_siswa', $id);
+        $this->db->where('LEFT(tasm,4)', $this->d['c']['ta_tahun']);
+        $get_sdh_ada_nilai_ssp = $this->db->get('t_nilai_sikap_sp')->num_rows();
+
+        $this->db->where('id_siswa', $id);
+        $this->db->where('LEFT(tasm,4)', $this->d['c']['ta_tahun']);
+        $get_sdh_ada_nilai_absen = $this->db->get('t_nilai_absensi')->num_rows();
+
+        $this->db->where('id_siswa', $id);
+        $this->db->where('LEFT(tasm,4)', $this->d['c']['ta_tahun']);
+        $get_sdh_ada_nilai_ekstra = $this->db->get('t_nilai_ekstra')->num_rows();
+        
+        $jml_ada = ($get_sdh_ada_nilai_p + $get_sdh_ada_nilai_ket + $get_sdh_ada_nilai_sso + $get_sdh_ada_nilai_ssp + $get_sdh_ada_nilai_absen + $get_sdh_ada_nilai_ekstra);
+
+        if ($jml_ada > 0) {
+            $d['status'] = "gagal";
+            $d['data'] = "Siswa sudah diinput nilainya";            
+        } else {
+            $this->db->where('id_siswa', $id);
+            $this->db->where('ta', $this->d['c']['ta_tahun']);
+            $this->db->delete('t_kelas_siswa');
+            
+            $d['status'] = "ok";
+            $d['data'] = "Data berhasil dihapus";
+        }
+
         
         j($d);
     }
@@ -123,17 +105,17 @@ class Set_kelas extends CI_Controller {
                                     <tbody>';
 
                 $q_siswa_per_kelas = $this->db->query("SELECT 
-                                                        a.id, a.id_kelas, b.nama nmsiswa
+                                                        a.id, a.id_siswa, a.id_kelas, b.nama nmsiswa
                                                         FROM t_kelas_siswa a
                                                         INNER JOIN m_siswa b ON a.id_siswa = b.id
                                                         WHERE a.id_kelas = '".$v['id']."' 
-                                                        AND a.ta = '".$this->d['ta']."'
+                                                        AND a.ta = '".$this->d['c']['ta_tahun']."'
                                                         ORDER BY b.nis ASC, b.nama ASC")->result_array();
 
                 if (!empty($q_siswa_per_kelas)) {
                     $no = 1;
                     foreach ($q_siswa_per_kelas as $k) {
-                        $tampil .= '<tr><td>'.$no++.'</td><td>'.$k['nmsiswa'].'</td><td class="ctr"><a href="#" onclick="return hapus('.$k['id'].');" class="btn btn-danger btn-xs"><i class="fa fa-remove"></i></a></td></tr>';
+                        $tampil .= '<tr><td>'.$no++.'</td><td>'.$k['nmsiswa'].'</td><td class="ctr"><a href="#" onclick="return hapus('.$k['id_siswa'].');" class="btn btn-danger btn-xs"><i class="fa fa-remove"></i></a></td></tr>';
                     }
                 }
 

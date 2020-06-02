@@ -1,10 +1,15 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-class Data_ekstra extends CI_Controller {
+require_once(APPPATH . "controllers/Master.php");
+
+class Data_ekstra extends Master {
 	function __construct() {
         parent::__construct();
-        $this->sespre = $this->config->item('session_name_prefix');
-        $this->d['admlevel'] = $this->session->userdata($this->sespre.'level');
+        cek_aktif();
+
+        $akses = array("admin");
+        cek_hak_akses($this->d['s']['level'], $akses);
+        
         $this->d['url'] = "data_ekstra";
     }
     public function datatable() {

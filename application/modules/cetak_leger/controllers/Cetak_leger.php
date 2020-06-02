@@ -22,6 +22,8 @@ class Cetak_leger extends CI_Controller {
                 inner join m_kelas b on a.id_kelas = b.id
                 inner join m_guru c on a.id_guru = c.id
                 where left(a.tasm,4) = '".$this->d['ta']."' and a.id_kelas = '".$this->d['id_kelas']."'")->row_array();
+    
+        cek_aktif();
         
     }
     public function index() {

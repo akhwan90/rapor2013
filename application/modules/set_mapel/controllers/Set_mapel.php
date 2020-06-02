@@ -1,18 +1,18 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
+require_once(APPPATH . "controllers/Master.php");
 
-class Set_mapel extends CI_Controller {
+class Set_mapel extends Master {
 	function __construct() {
         parent::__construct();
-        $this->sespre = $this->config->item('session_name_prefix');
+        cek_aktif();
 
-        $this->d['admlevel'] = $this->session->userdata($this->sespre.'level');
+        $akses = array("admin");
+        cek_hak_akses($this->d['s']['level'], $akses);
+
         $this->d['url'] = "set_mapel";
         $this->d['idnya'] = "setmapel";
         $this->d['nama_form'] = "f_setmapel";
-
-        $get_tasm = $this->db->query("SELECT tahun FROM tahun WHERE aktif = 'Y'")->row_array();
-        $this->d['tasm'] = $get_tasm['tahun'];
     }
 
     public function datatable() {
@@ -27,7 +27,7 @@ class Set_mapel extends CI_Controller {
                                         INNER JOIN m_guru b ON a.id_guru = b.id
                                         INNER JOIN m_kelas c ON a.id_kelas = c.id
                                         INNER JOIN m_mapel d ON a.id_mapel = d.id
-                                        WHERE a.tasm = '".$this->d['tasm']."'
+                                        WHERE a.tasm = '".$this->d['c']['ta_tasm']."'
                                         ORDER BY nmguru ASC, nmmapel ASC, nmkelas ASC")->num_rows();
     
         $q_datanya = $this->db->query("SELECT
@@ -36,7 +36,7 @@ class Set_mapel extends CI_Controller {
                                     INNER JOIN m_guru b ON a.id_guru = b.id
                                     INNER JOIN m_kelas c ON a.id_kelas = c.id
                                     INNER JOIN m_mapel d ON a.id_mapel = d.id
-                                    WHERE a.tasm = '".$this->d['tasm']."' AND 
+                                    WHERE a.tasm = '".$this->d['c']['ta_tasm']."' AND 
                                     (b.nama LIKE '%".$search['value']."%' 
                                     OR c.nama LIKE '%".$search['value']."%'
                                     OR d.nama LIKE '%".$search['value']."%')
@@ -85,12 +85,12 @@ class Set_mapel extends CI_Controller {
         $jumlah_sudah = 0;
 
         foreach ($p['data_pilih'] as $s) {
-            $cek = $this->db->query("SELECT id FROM t_guru_mapel WHERE tasm = '".$this->d['tasm']."' AND id_mapel = '".$p['mapel']."' AND id_kelas = '$s'")->num_rows();
+            $cek = $this->db->query("SELECT id FROM t_guru_mapel WHERE tasm = '".$this->d['c']['ta_tasm']."' AND id_mapel = '".$p['mapel']."' AND id_kelas = '$s'")->num_rows();
             
             if ($cek > 0) {
                 $jumlah_sudah ++;
             } else {
-                $this->db->query("INSERT INTO t_guru_mapel (tasm, id_guru, id_kelas, id_mapel) VALUES ('".$this->d['tasm']."', '".$p['guru']."', '".$s."', '".$p['mapel']."')");
+                $this->db->query("INSERT INTO t_guru_mapel (tasm, id_guru, id_kelas, id_mapel) VALUES ('".$this->d['c']['ta_tasm']."', '".$p['guru']."', '".$s."', '".$p['mapel']."')");
             }
         }
 
@@ -109,7 +109,7 @@ class Set_mapel extends CI_Controller {
     }
     
     public function copy_semester_lalu() {
-        $sekarang = $this->d['tasm'];
+        $sekarang = $this->d['c']['ta_tasm'];
         $tahun_lalu = intval(substr($sekarang, 0, 4));
         $semester_lalu = intval(substr($sekarang, 4, 1));
         
@@ -125,20 +125,28 @@ class Set_mapel extends CI_Controller {
         
         $queri = $this->db->query("SELECT * FROM t_guru_mapel WHERE tasm = '".$semester_yll."'")->result_array();
         
-        $arre_input = array();
         if (!empty($queri)) {
+            $arre_input = array();
+
             foreach ($queri as $d) {
                 $teks1 = "('".$sekarang."', '".$d['id_guru']."', '".$d['id_kelas']."', '".$d['id_mapel']."')";
             
                 $arre_input[] = $teks1;
             }
+            
+            $hapus_sekarang = $this->db->query("DELETE FROM t_guru_mapel WHERE tasm = '".$sekarang."'");
+            
+            $queri_input = "INSERT INTO t_guru_mapel (tasm, id_guru, id_kelas, id_mapel) VALUES ".implode(",", $arre_input).";";
+            
+            $this->db->query($queri_input);
+
+            $this->session->set_flashdata('k', '<div class="alert alert-success">Berhasil copy data semester lalu</div>');
+
+        } else {
+
+            $this->session->set_flashdata('k', '<div class="alert alert-danger">Data semester lalu kosong..</div>');
         }
-        
-        $hapus_sekarang = $this->db->query("DELETE FROM t_guru_mapel WHERE tasm = '".$sekarang."'");
-        
-        $queri_input = "INSERT INTO t_guru_mapel (tasm, id_guru, id_kelas, id_mapel) VALUES ".implode(",", $arre_input).";";
-        
-        $this->db->query($queri_input);
+
         redirect('set_mapel');
     }
 

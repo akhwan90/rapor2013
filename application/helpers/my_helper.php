@@ -2,19 +2,23 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 function cek_aktif() {
 	$CI 	=& get_instance();
-	$sesspre = $CI->config->item('session_name_prefix');
-	$aktif 		= $CI->session->userdata($sesspre."valid");
-	$username 	= $CI->session->userdata($sesspre."user");
-	if ($aktif != TRUE || $username == "") {
+	$aktif 		= $CI->session->userdata("valid");
+	$username 	= $CI->session->userdata("user");
+	if ($aktif !== TRUE || $username === "") {
 		redirect('login');
 	}
 }
-function cek_hak_akses($user_level, $list_hak_akses) {
+function cek_hak_akses_bol($user_level, $list_hak_akses) {
 	if (!in_array($user_level, $list_hak_akses)) {
 		return false;
 	} else {
 		return true;
 	}
+}
+function cek_hak_akses($user_level, $list_hak_akses) {
+    if (!in_array($user_level, $list_hak_akses)) {
+        redirect('unauthorized_access');
+    }
 }
 function nilai_huruf($nilai) {
 	$CI 	=& get_instance();
@@ -79,11 +83,13 @@ function generate_menu($level, $is_wali=false) {
 	$menu = '<li><a href="'.base_url().'"><i class="pe-7s-home"></i><p>Beranda</p></a></li>';
 	if ($level == "admin") {
 		$menu .= 	'
-					<li><a href="'.base_url().'data_guru"><i class="pe-7s-user"></i><p>Data Guru</p></a></li>
+					<li><a href="'.base_url().'data_sekolah"><i class="pe-7s-map"></i><p>Data Sekolah</p></a></li>
+                    <li><a href="'.base_url().'data_guru"><i class="pe-7s-user"></i><p>Data Guru</p></a></li>
 					<li><a href="'.base_url().'data_siswa"><i class="pe-7s-users"></i><p>Data Siswa</p></a></li>
 					<li><a href="'.base_url().'data_kelas"><i class="pe-7s-home"></i><p>Data Kelas</p></a></li>
 					<li><a href="'.base_url().'data_mapel"><i class="pe-7s-ticket"></i><p>Data Mapel</p></a></li>
 					<li><a href="'.base_url().'data_ekstra"><i class="pe-7s-ball"></i><p>Data Ekstra</p></a></li>
+                    <li><a href="'.base_url().'data_kd"><i class="pe-7s-notebook"></i><p>Data KD</p></a></li>
 					<li><a href="'.base_url().'tahun"><i class="pe-7s-date"></i><p>Set Tahun Aktif</p></a></li>
 					<li><a href="'.base_url().'set_kelas"><i class="pe-7s-add-user"></i><p>Set Kelas</p></a></li>
 					<li><a href="'.base_url().'set_mapel"><i class="pe-7s-notebook"></i><p>Set Mapel</p></a></li>

@@ -82,7 +82,7 @@
             });
             return indexed_array;
         }
-        function pagination(indentifier, url, config) {
+        function pagination(indentifier, url, config, data=[]) {
             $('#'+indentifier).DataTable({
                 "language": {
                     "url": base_url+"<?php echo base_url(); ?>aset/plugins/datatables/Indonesian.json"
@@ -95,6 +95,7 @@
                 "ajax":{
                     url : url, // json datasource
                     type: "post",  // type of method  , by default would be get
+                    data: data,
                     error: function(){  // error handling code
                         $("#"+indentifier).css("display","none");
                     }
@@ -112,6 +113,9 @@
     </script>
     <style type="text/css">
         #datatabel {width: 100%}
+        .mt-1 {margin-top: 1em;}
+        .mt-2 {margin-top: 2em;}
+        .mt-3 {margin-top: 3em;}
     </style>
 </head>
 <body>
@@ -129,10 +133,9 @@
             </div>
             <ul class="nav">
                 <?php 
-                $prefix = $this->config->item('session_name_prefix');
-                
-                $walikelas = $this->session->userdata($prefix."walikelas");
-                echo generate_menu($admlevel,$walikelas['is_wali']);  
+                $level = $this->session->userdata("level");
+                $walikelas = $this->session->userdata("walikelas");
+                echo generate_menu($level, $walikelas['is_wali']);  
                 ?>
             </ul>
             
@@ -155,9 +158,9 @@
                     <ul class="nav navbar-nav navbar-right">
                         <?php 
                         
-                        if ($this->session->userdata($prefix."valid") == true) {
+                        if ($this->session->userdata("valid") == true) {
                         ?>
-                        <li><a href="#">Login Sebagai : <?php echo $this->session->userdata($prefix."user"); ?> </a></li>
+                        <li><a href="#">Login Sebagai : <?php echo $this->session->userdata("user"); ?> </a></li>
                         <li>
                             <a href="<?php echo base_url(); ?>login/logout" onclick="return hilangkan_gambar();">
                                 Log out
@@ -176,7 +179,7 @@
         <footer class="footer">
             <div class="container-fluid">
                 <p class="copyright pull-left">
-                    <b><?php echo $this->config->item('nama_sekolah'); ?></b>
+                    <b><?php echo $c['sekolah_nama']; ?></b>
                 </p>
                 <p class="copyright pull-right">
                     Waktu proses {elapsed_time} detik. &copy; 2016 

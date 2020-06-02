@@ -49,16 +49,21 @@
                 },
                 success: function(r) {
                     $("#username, #password, #tbLogin").attr('disabled', false);
-                    if (r.status == "gagal") {
-                        alert(r.data);
-
-                    	$("#tbLogin").html('<i class="fa fa-check-circle"></i> Login');
-                        $("#password").val('');
-                        $("#password").focus();
-                    } else {
+                    $("#tbLogin").html('<i class="fa fa-check-circle"></i> Login');
+                    if (r.status == "ok") {
                         alert(r.data);
                         window.location.assign(base_url+"home");
+                    } else {
+                        alert(r.data);
+                        
+                        $("#password").val('');
+                        $("#password").focus();
                     }
+                },
+                error: function (x) {
+                    $("#username, #password, #tbLogin").attr('disabled', false);
+                    $("#tbLogin").html('<i class="fa fa-check-circle"></i> Login');
+                    console.log(x);
                 }
             });
             return false;

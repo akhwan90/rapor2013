@@ -1,21 +1,18 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
+require_once(APPPATH . "controllers/Master.php");
 
-class Tahun extends CI_Controller {
+class Tahun extends Master {
 	function __construct() {
         parent::__construct();
-        $this->sespre = $this->config->item('session_name_prefix');
+        cek_aktif();
 
-        $this->d['admlevel'] = $this->session->userdata($this->sespre.'level');
+        $akses = array("admin");
+        cek_hak_akses($this->d['s']['level'], $akses);
+        
         $this->d['url'] = "tahun";
         $this->d['idnya'] = "dataguru";
         $this->d['nama_form'] = "f_dataguru";
-
-        $akses = array("admin");
-
-        if (!cek_hak_akses($this->d['admlevel'], $akses)) {
-            redirect('unauthorized_access');
-        }
         
     }
 
