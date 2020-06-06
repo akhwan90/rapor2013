@@ -16,6 +16,10 @@
                         <?=form_input('alamat', $sekolah['alamat'], 'id="alamat" class="form-control" required');?>
                     </div>
                     <div class="form-group">
+                        <label for="">Sebutan Kepala Sekolah</label>
+                        <?=form_input('sebutan_kepala', $sekolah['sebutan_kepala'], 'id="sebutan_kepala" class="form-control" required');?>
+                    </div>
+                    <div class="form-group">
                         <button type="submit" class="btn btn-success">Simpan</button>
                     </div>
                 </form>

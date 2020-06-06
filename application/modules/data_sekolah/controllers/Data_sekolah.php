@@ -21,7 +21,8 @@ class Data_sekolah extends Master {
         $this->db->where('id', 1);
         $this->db->update('m_sekolah', [
             'nama_sekolah'=>$p['nama_sekolah'],
-            'alamat'=>$p['alamat']
+            'alamat'=>$p['alamat'],
+            'sebutan_kepala'=>$p['sebutan_kepala'],
         ]);
 
         $d['status'] = "sukses";

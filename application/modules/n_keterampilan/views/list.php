@@ -1,4 +1,5 @@
 <div class="row">
+    <div class="col-md-12"><?=$this->session->flashdata('k');?></div>
     <div class="col-md-12">
         <div class="alert alert-warning" style="color: #000">
             <b>Petunjuk : </b><br>
@@ -13,9 +14,9 @@
         <div class="panel panel-default">
             <div class="panel-body">
                 <a href="<?php echo base_url(); ?>view_mapel" class="btn btn-info"><i class="fa fa-arrow-left"></i> Kembali</a>
-                <a href="<?php echo base_url(); ?>n_keterampilan/cetak/<?php echo $detil_mp['id_mapel']."-".$detil_mp['id_kelas']; ?>" class="btn btn-warning" target="_blank"><i class="fa fa-print"></i> Cetak</a>
-                <a href="<?php echo base_url(); ?>n_keterampilan/import/<?php echo $detil_mp['id_mapel']."-".$detil_mp['id_kelas']; ?>" class="btn btn-danger"><i class="fa fa-download"></i> Download File Excel</a>
-                <a href="<?php echo base_url(); ?>n_keterampilan/upload/<?php echo $detil_mp['id_mapel']."-".$detil_mp['id_kelas']; ?>" class="btn btn-success"><i class="fa fa-upload"></i> Upload File Excel</a>
+                <a href="<?php echo base_url(); ?>n_keterampilan/cetak/<?php echo $id_guru_mapel; ?>" class="btn btn-warning" target="_blank"><i class="fa fa-print"></i> Cetak</a>
+                <a href="<?php echo base_url(); ?>n_keterampilan/export/<?php echo $id_guru_mapel; ?>" class="btn btn-danger"><i class="fa fa-download"></i> Download File Excel</a>
+                <a href="<?php echo base_url(); ?>n_keterampilan/upload/<?php echo $id_guru_mapel; ?>" class="btn btn-success"><i class="fa fa-upload"></i> Upload File Excel</a>
             </div>
         </div>
     </div>
@@ -26,7 +27,7 @@
             </div>
             <div class="content">
                 <p>
-                    <a href="#" onclick="return edit(0);" class="btn btn-info"><i class="fa fa-plus-circle"></i> Tambah KD</a>
+                    <!-- <a href="#" onclick="return edit(0);" class="btn btn-info"><i class="fa fa-plus-circle"></i> Tambah KD</a> -->
                 </p>
                 <ul class="list-group" id="list_kd">
                     <?php 
@@ -34,10 +35,10 @@
                         foreach ($list_kd as $lk) {
                     ?>
                     <li class="list-group-item"><a href="#" onclick="return view_kd(<?php echo $lk['id'].", ".$detil_mp['id_kelas']; ?>);"><?php echo "(".$lk['no_kd'].") ".$lk['nama_kd'].""; ?></a>
-                        <div class="pull-right">
+                        <!-- <div class="pull-right">
                             <a href="#" onclick="return edit(<?php echo $lk['id']; ?>);" class="btn btn-xs btn-success"><i class="fa fa-pencil"></i></a>
                             <a href="#" onclick="return hapus(<?php echo $lk['id']; ?>);" class="btn btn-xs btn-danger"><i class="fa fa-remove"></i></a>
-                        </div>
+                        </div> -->
                     </li>
                     <?php 
                         }
@@ -108,10 +109,7 @@
     id_guru_mapel = <?php echo $this->uri->segment(3); ?>;
     $(document).on("ready", function() {
         view_kd(0,0);
-        $('#list_kd li').on('click', function(){
-            $('li.active').removeClass('active');
-            $(this).addClass('active');
-        });
+
         $("#f_input_nilai").on("submit", function() {
             var data    = $(this).serialize();
     
@@ -120,18 +118,20 @@
                 data: data,
                 url: base_url+"<?php echo $url; ?>/simpan_nilai",
                 beforeSend: function(){
-                    $("#tbSimpan").attr("disabled", true);
+                    $("#f_input_nilai input select button").attr("disabled", true);
                 },
                 success: function(r) {
-                    $("#tbSimpan").attr("disabled", false);
+                    $("#f_input_nilai input select button").attr("disabled", false);
 
                     if (r.status == "gagal") {
                         noti("danger", r.data);
                     } else {
-                        $("#modal_data").modal('hide');
                         noti("success", r.data);
-                        pagination("datatabel", base_url+"data_guru/datatable", []);
                     }
+                },
+                error: function(x) {
+                    $("#f_input_nilai input select button").attr("disabled", false);
+                    console.log(x);
                 }
             });
             return false;

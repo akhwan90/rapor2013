@@ -4158,3 +4158,82 @@ DEBUG - 2020-06-02 14:32:10 --> File loaded: D:\laragon\www\rapor2013\applicatio
 DEBUG - 2020-06-02 14:32:10 --> File loaded: D:\laragon\www\rapor2013\application\views\template_utama.php
 INFO - 2020-06-02 14:32:10 --> Final output sent to browser
 DEBUG - 2020-06-02 14:32:10 --> Total execution time: 0.4749
+INFO - 2020-06-02 14:44:55 --> Config Class Initialized
+INFO - 2020-06-02 14:44:55 --> Hooks Class Initialized
+DEBUG - 2020-06-02 14:44:55 --> UTF-8 Support Enabled
+INFO - 2020-06-02 14:44:55 --> Utf8 Class Initialized
+INFO - 2020-06-02 14:44:55 --> URI Class Initialized
+INFO - 2020-06-02 14:44:55 --> Router Class Initialized
+INFO - 2020-06-02 14:44:55 --> Output Class Initialized
+INFO - 2020-06-02 14:44:55 --> Security Class Initialized
+DEBUG - 2020-06-02 14:44:55 --> Global POST, GET and COOKIE data sanitized
+INFO - 2020-06-02 14:44:55 --> Input Class Initialized
+INFO - 2020-06-02 14:44:55 --> Language Class Initialized
+INFO - 2020-06-02 14:44:55 --> Language Class Initialized
+INFO - 2020-06-02 14:44:55 --> Config Class Initialized
+INFO - 2020-06-02 14:44:55 --> Loader Class Initialized
+INFO - 2020-06-02 14:44:55 --> Helper loaded: url_helper
+INFO - 2020-06-02 14:44:55 --> Helper loaded: file_helper
+INFO - 2020-06-02 14:44:55 --> Helper loaded: form_helper
+INFO - 2020-06-02 14:44:55 --> Helper loaded: my_helper
+INFO - 2020-06-02 14:44:55 --> Database Driver Class Initialized
+DEBUG - 2020-06-02 14:44:55 --> Session: "sess_save_path" is empty; using "session.save_path" value from php.ini.
+INFO - 2020-06-02 14:44:55 --> Session: Class initialized using 'files' driver.
+INFO - 2020-06-02 14:44:55 --> Controller Class Initialized
+DEBUG - 2020-06-02 14:44:55 --> File loaded: D:\laragon\www\rapor2013\application\modules/view_mapel/views/v_view_mapel.php
+DEBUG - 2020-06-02 14:44:55 --> File loaded: D:\laragon\www\rapor2013\application\views\template_utama.php
+INFO - 2020-06-02 14:44:55 --> Final output sent to browser
+DEBUG - 2020-06-02 14:44:55 --> Total execution time: 0.5017
+INFO - 2020-06-02 14:44:58 --> Config Class Initialized
+INFO - 2020-06-02 14:44:58 --> Hooks Class Initialized
+DEBUG - 2020-06-02 14:44:58 --> UTF-8 Support Enabled
+INFO - 2020-06-02 14:44:58 --> Utf8 Class Initialized
+INFO - 2020-06-02 14:44:58 --> URI Class Initialized
+DEBUG - 2020-06-02 14:44:59 --> No URI present. Default controller set.
+INFO - 2020-06-02 14:44:59 --> Router Class Initialized
+INFO - 2020-06-02 14:44:59 --> Output Class Initialized
+INFO - 2020-06-02 14:44:59 --> Security Class Initialized
+DEBUG - 2020-06-02 14:44:59 --> Global POST, GET and COOKIE data sanitized
+INFO - 2020-06-02 14:44:59 --> Input Class Initialized
+INFO - 2020-06-02 14:44:59 --> Language Class Initialized
+INFO - 2020-06-02 14:44:59 --> Language Class Initialized
+INFO - 2020-06-02 14:44:59 --> Config Class Initialized
+INFO - 2020-06-02 14:44:59 --> Loader Class Initialized
+INFO - 2020-06-02 14:44:59 --> Helper loaded: url_helper
+INFO - 2020-06-02 14:44:59 --> Helper loaded: file_helper
+INFO - 2020-06-02 14:44:59 --> Helper loaded: form_helper
+INFO - 2020-06-02 14:44:59 --> Helper loaded: my_helper
+INFO - 2020-06-02 14:44:59 --> Database Driver Class Initialized
+DEBUG - 2020-06-02 14:44:59 --> Session: "sess_save_path" is empty; using "session.save_path" value from php.ini.
+INFO - 2020-06-02 14:44:59 --> Session: Class initialized using 'files' driver.
+INFO - 2020-06-02 14:44:59 --> Controller Class Initialized
+DEBUG - 2020-06-02 14:44:59 --> File loaded: D:\laragon\www\rapor2013\application\modules/home/views/v_home.php
+DEBUG - 2020-06-02 14:44:59 --> File loaded: D:\laragon\www\rapor2013\application\views\template_utama.php
+INFO - 2020-06-02 14:44:59 --> Final output sent to browser
+DEBUG - 2020-06-02 14:44:59 --> Total execution time: 0.4618
+INFO - 2020-06-02 14:45:00 --> Config Class Initialized
+INFO - 2020-06-02 14:45:00 --> Hooks Class Initialized
+DEBUG - 2020-06-02 14:45:00 --> UTF-8 Support Enabled
+INFO - 2020-06-02 14:45:00 --> Utf8 Class Initialized
+INFO - 2020-06-02 14:45:00 --> URI Class Initialized
+INFO - 2020-06-02 14:45:00 --> Router Class Initialized
+INFO - 2020-06-02 14:45:00 --> Output Class Initialized
+INFO - 2020-06-02 14:45:00 --> Security Class Initialized
+DEBUG - 2020-06-02 14:45:00 --> Global POST, GET and COOKIE data sanitized
+INFO - 2020-06-02 14:45:00 --> Input Class Initialized
+INFO - 2020-06-02 14:45:00 --> Language Class Initialized
+INFO - 2020-06-02 14:45:00 --> Language Class Initialized
+INFO - 2020-06-02 14:45:00 --> Config Class Initialized
+INFO - 2020-06-02 14:45:00 --> Loader Class Initialized
+INFO - 2020-06-02 14:45:00 --> Helper loaded: url_helper
+INFO - 2020-06-02 14:45:00 --> Helper loaded: file_helper
+INFO - 2020-06-02 14:45:00 --> Helper loaded: form_helper
+INFO - 2020-06-02 14:45:00 --> Helper loaded: my_helper
+INFO - 2020-06-02 14:45:00 --> Database Driver Class Initialized
+DEBUG - 2020-06-02 14:45:01 --> Session: "sess_save_path" is empty; using "session.save_path" value from php.ini.
+INFO - 2020-06-02 14:45:01 --> Session: Class initialized using 'files' driver.
+INFO - 2020-06-02 14:45:01 --> Controller Class Initialized
+DEBUG - 2020-06-02 14:45:01 --> File loaded: D:\laragon\www\rapor2013\application\modules/view_mapel/views/v_view_mapel.php
+DEBUG - 2020-06-02 14:45:01 --> File loaded: D:\laragon\www\rapor2013\application\views\template_utama.php
+INFO - 2020-06-02 14:45:01 --> Final output sent to browser
+DEBUG - 2020-06-02 14:45:01 --> Total execution time: 0.5532

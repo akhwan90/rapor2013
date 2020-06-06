@@ -15,8 +15,9 @@
             <div class="panel-body">
                 <a href="<?php echo base_url(); ?>view_mapel" class="btn btn-info"><i class="fa fa-arrow-left"></i> Kembali</a>
                 <a href="<?php echo base_url(); ?>n_pengetahuan/cetak/<?php echo $id_guru_mapel; ?>" class="btn btn-warning" target="_blank"><i class="fa fa-print"></i> Cetak</a>
-                <a href="<?php echo base_url(); ?>n_pengetahuan/import/<?php echo $detil_mp['id_mapel']."-".$detil_mp['id_kelas']; ?>" class="btn btn-danger"><i class="fa fa-download"></i> Download File Excel</a>
-                <a href="<?php echo base_url(); ?>n_pengetahuan/upload/<?php echo $detil_mp['id_mapel']."-".$detil_mp['id_kelas']; ?>" class="btn btn-success"><i class="fa fa-upload"></i> Upload File Excel</a>
+                <a href="<?php echo base_url(); ?>n_pengetahuan/export/<?php echo $id_guru_mapel; ?>" class="btn btn-danger"><i class="fa fa-download"></i> Download File Excel</a>
+                <!-- <a href="<?php echo base_url(); ?>n_pengetahuan/upload/<?php echo $detil_mp['id_mapel']."-".$detil_mp['id_kelas']; ?>" class="btn btn-success"><i class="fa fa-upload"></i> Upload File Excel</a> -->
+                <a href="<?php echo base_url(); ?>n_pengetahuan/upload/<?php echo $id_guru_mapel; ?>" class="btn btn-success"><i class="fa fa-upload"></i> Upload File Excel</a>
             </div>
         </div>
     </div>
@@ -26,9 +27,6 @@
                 <h5 class="title">Nilai Pengetahuan &raquo; <?php echo $detil_mp['nmmapel']." - ".$detil_mp['nmkelas']; ?></h5>
             </div>
             <div class="content">
-                <p>
-                    <a href="#" onclick="return edit(0);" class="btn btn-info"><i class="fa fa-plus-circle"></i> Tambah KD</a>
-                </p>
                 <ul class="list-group" id="list_kd">
                     <div id="list_kd_2" style="margin-bottom: 10px"></div>
                     
@@ -101,10 +99,6 @@
         view_kd(0,0);
         list_kd();
 
-        $('#list_kd li').on('click', function(){
-            $('li.active').removeClass('active');
-            $(this).addClass('active');
-        });
         $("#f_input_nilai").on("submit", function() {
             var data    = $(this).serialize();
     
@@ -113,32 +107,36 @@
                 data: data,
                 url: base_url+"<?php echo $url; ?>/simpan_nilai",
                 beforeSend: function(){
-                    $("#tbSimpan").attr("disabled", true);
+                    $("#f_input_nilai input select button").attr("disabled", true);
                 },
                 success: function(r) {
-                    $("#tbSimpan").attr("disabled", false);
+                    $("#f_input_nilai input select button").attr("disabled", true);
                     if (r.status == "gagal") {
                         noti("danger", r.data);
                     } else {
                         $("#modal_data").modal('hide');
                         noti("success", r.data);
-                        pagination("datatabel", base_url+"data_guru/datatable", []);
                     }
+                },
+                error: function(x) {
+                    $("#f_input_nilai input select button").attr("disabled", true);
+                    noti(x);
                 }
             });
             return false;
         });
     });
-    function view_kd(id, kelas, jenis='h') {
+    function view_kd(id_kd, kelas, jenis='h') {
         
-        if (id == 0 && kelas == 0) {
+        if (id_kd == 0 && kelas == 0) {
             $("#load_nilai").html('<div class="alert alert-warning">Silakan pilih KD di samping</div>');
         } else {
-            $("#id_mapel_kd").val(id);
+            $("#id_mapel_kd").val(id_kd);
             $("#jenis").val(jenis);
             
             $("#load_nilai").html("Loading...");
-            $.getJSON(base_url+"<?php echo $url; ?>/ambil_siswa/"+kelas+"/"+id+"/"+jenis, function(data) {
+
+            $.getJSON(base_url+"<?php echo $url; ?>/ambil_siswa/"+kelas+"/"+id_kd+"/"+jenis, function(data) {
                 $("#load_nilai").show('slow');
                 html = '<table class="table table-condensed table-bordered table-hover"><thead><tr><th width="10%">No</th><th width="60%">Nama</th><th width="30%">Nilai</th></tr></thead><tbody>';
                 var i = 1;
@@ -233,7 +231,9 @@
                 var h = '';
                 if (data.length > 0) {
                     $.each(data, function (i, v) {
-                        h += '<li class="list-group-item"><a href="#" onclick="return view_kd('+v.id+', <?=$detil_mp['id_kelas'];?>);">('+v.no_kd+') '+v.nama_kd+'</a><div class="pull-right"><a href="#" onclick="return edit('+v.id+');" class="btn btn-xs btn-success"><i class="fa fa-pencil"></i> </a><a href="#" onclick="return hapus('+v.id+');" class="btn btn-xs btn-danger"><i class="fa fa-remove"></i> </a></div></li>';
+                        h += '<li class="list-group-item"><a href="#" onclick="return view_kd('+v.id+', <?=$detil_mp['id_kelas'];?>);">('+v.no_kd+') '+v.nama_kd+'</a></li>';
+
+                        // i = '<div class="pull-right"><a href="#" onclick="return edit('+v.id+');" class="btn btn-xs btn-success"><i class="fa fa-pencil"></i> </a><a href="#" onclick="return hapus('+v.id+');" class="btn btn-xs btn-danger"><i class="fa fa-remove"></i> </a></div></li>';
                     });
                 } else {
                     h += '<div class="alert alert-info">KD Belum satupun diinputkan</div>';

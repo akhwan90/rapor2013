@@ -1,26 +1,52 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-class N_keterampilan extends CI_Controller {
+require_once(APPPATH . "controllers/Master.php");
+
+class N_keterampilan extends Master {
 	function __construct() {
         parent::__construct();
         cek_aktif();
 
-        $this->sespre = $this->config->item('session_name_prefix');
-        $this->d['admlevel'] = $this->session->userdata($this->sespre.'level');
-        $this->d['admkonid'] = $this->session->userdata($this->sespre.'konid');
+        $akses = array("guru");
+        cek_hak_akses($this->d['s']['level'], $akses);
+
         $this->d['url'] = "n_keterampilan";
         $this->d['idnya'] = "setmapel";
         $this->d['nama_form'] = "f_setmapel";
-        $get_tasm = $this->db->query("SELECT tahun FROM tahun WHERE aktif = 'Y'")->row_array();
-        $this->d['tasm'] = $get_tasm['tahun'];
-        $this->d['semester'] = substr($this->d['tasm'], -1, 1);
-        $this->d['tahun'] = substr($this->d['tasm'], 0, 4);
 
         $this->kolom_xl = array("A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z");
     }
+    public function index($id) {
+
+        $this->session->set_userdata("id_guru_mapel", $id);
+        
+        $this->d['detil_mp'] = $this->db->query("SELECT 
+                                        a.*, b.nama nmmapel, c.nama nmkelas, c.tingkat tingkat
+                                        FROM t_guru_mapel a
+                                        INNER JOIN m_mapel b ON a.id_mapel = b.id 
+                                        INNER JOIN m_kelas c ON a.id_kelas = c.id 
+                                        WHERE a.id  = '$id'")->row_array();
+        $this->d['list_kd'] = $this->db->query("SELECT * FROM t_mapel_kd 
+                                    WHERE id_mapel = '".$this->d['detil_mp']['id_mapel']."'
+                                    AND tingkat = '".$this->d['detil_mp']['tingkat']."'
+                                    AND semester = '".$this->d['c']['ta_semester']."'
+                                    AND jenis = 'K'")->result_array();
+        $this->d['id_guru_mapel'] = $id;
+        $this->d['p'] = "list";
+        $this->load->view("template_utama", $this->d);
+    }
 
 
-    public function import($bawa) {
+
+    public function cek() {
+        $this->load->model('n_keterampilan_model', 'nkm');
+
+        j($this->nkm->gen_nilai(4));
+        exit;
+    }
+
+
+    public function export($id_guru_mapel) {
         $this->load->library('excel');
         
         $objPHPExcel = new PHPExcel();
@@ -41,79 +67,27 @@ class N_keterampilan extends CI_Controller {
         $objPHPExcel->getActiveSheet()->getStyle('A1:A2')->getFont()->setSize(16);
         $objPHPExcel->getActiveSheet()->getStyle('A1:A2')->getFont()->getColor()->setARGB(PHPExcel_Style_Color::COLOR_RED);
 
-        //query utama import
-        $pc_bawa = explode("-", $bawa);
-        $detil_guru = $this->db->query("SELECT 
-                                         a.id_guru, b.nama nmmapel, c.nama nmkelas, d.nama nmguru
-                                         FROM t_guru_mapel a
-                                         INNER JOIN m_mapel b ON a.id_mapel = b.id 
-                                         INNER JOIN m_kelas c ON a.id_kelas = c.id
-                                         INNER JOIN m_guru d ON a.id_guru = d.id 
-                                         WHERE b.id = ".$pc_bawa[0]." AND c.id = ".$pc_bawa[1]." AND a.tasm = '".$this->d['tasm']."'")->row_array();
-        $q_nilai_harian = $this->db->query("SELECT 
-                                d.nama nmsiswa, a.id_mapel_kd, a.id_siswa, a.nilai
-                                FROM t_nilai_ket a
-                                LEFT JOIN t_mapel_kd b ON a.id_mapel_kd = b.id
-                                LEFT JOIN t_kelas_siswa c ON CONCAT(a.id_siswa,LEFT(a.tasm,4)) = CONCAT(c.id_siswa,c.ta)
-                                LEFT JOIN m_siswa d ON c.id_siswa = d.id
-                                WHERE c.id_kelas = ".$pc_bawa[1]." AND b.id_mapel = ".$pc_bawa[0]."
-                                AND a.tasm = '".$this->d['tasm']."'
-                                ORDER BY d.nama ASC")->result_array();
+        $this->load->model('n_keterampilan_model', 'nkm');
+        $get_nilai = $this->nkm->gen_nilai($id_guru_mapel);
+        $jml_kd = count($get_nilai['data_kd']);
 
-        $q_kd_guru_ini = $this->db->query("SELECT a.* 
-                                    FROM t_mapel_kd a
-                                    LEFT JOIN m_kelas b ON a.tingkat = b.tingkat
-                                    WHERE a.id_guru = '".$this->d['admkonid']."'
-                                    AND a.id_mapel = '".$pc_bawa[0]."'
-                                    AND b.id = ".$pc_bawa[1]." 
-                                    AND a.semester = '".$this->d['semester']."'
-                                    AND a.jenis = 'K'")->result_array();
-        
-        $q_siswa_kelas = $this->db->query("SELECT a.id_siswa, b.nama nmsiswa FROM t_kelas_siswa a LEFT JOIN m_siswa b ON a.id_siswa = b.id WHERE a.id_kelas = '".$pc_bawa[1]."' AND a.ta = '".$this->d['tahun']."' ORDER BY b.nama ASC")->result_array();
-
-        $d_kd = array();
-        if (!empty($q_kd_guru_ini)) {
-            foreach ($q_kd_guru_ini as $v) {
-                $idx = $v['id'];
-                $d_kd[$idx]['kode'] = $v['no_kd'];
-            }
-        }
-
-        $d_nilai = array();
-
-        if (!empty($q_nilai_harian)) {
-            foreach ($q_nilai_harian as $d) {
-                $idx1 = $d['id_siswa'];
-                $idx2 = $d['id_mapel_kd'];
-                $d_nilai[$idx1]['nama'] = $d['nmsiswa'];
-                $d_nilai[$idx1]['h'][$idx2]['nilai_angka'] = $d['nilai'];
-            }
-        } else {
-            foreach ($q_siswa_kelas as $dk) {
-                $idx1 = $dk['id_siswa'];
-
-                foreach ($q_kd_guru_ini as $kg) {
-                    $idx2 = $kg['id'];
-                    $d_nilai[$idx1]['nama'] = $dk['nmsiswa'];
-                    $d_nilai[$idx1]['h'][$idx2]['nilai_angka'] = 0;
-                }
-            }
-        }
-
-
-        $jml_kd = sizeof($d_kd);
-        //akhir ambil variabel db
+        $id_mapel = $get_nilai['meta']['idmapel'];
+        $nm_mapel = $get_nilai['meta']['nmmapel'];
+        $id_guru = $get_nilai['meta']['idguru'];
+        $nm_guru = $get_nilai['meta']['nmguru'];
+        $id_kelas = $get_nilai['meta']['idkelas'];
+        $nm_kelas = $get_nilai['meta']['nmkelas'];
 
         /// mulai
         $objPHPExcel->getActiveSheet()->setCellValue('A4', 'ID Mapel');
-        $objPHPExcel->getActiveSheet()->setCellValue('B4', $pc_bawa[0]);
-        $objPHPExcel->getActiveSheet()->setCellValue('C4', ": ".$detil_guru['nmmapel']);
+        $objPHPExcel->getActiveSheet()->setCellValue('B4', $id_mapel);
+        $objPHPExcel->getActiveSheet()->setCellValue('C4', ": ".$nm_mapel);
         $objPHPExcel->getActiveSheet()->setCellValue('A5', 'ID Guru');
-        $objPHPExcel->getActiveSheet()->setCellValue('B5', $detil_guru['id_guru']);
-        $objPHPExcel->getActiveSheet()->setCellValue('C5', ": ".$detil_guru['nmguru']);
+        $objPHPExcel->getActiveSheet()->setCellValue('B5', $id_guru);
+        $objPHPExcel->getActiveSheet()->setCellValue('C5', ": ".$nm_guru);
         $objPHPExcel->getActiveSheet()->setCellValue('A6', 'ID Kelas');
-        $objPHPExcel->getActiveSheet()->setCellValue('B6', $pc_bawa[1]);
-        $objPHPExcel->getActiveSheet()->setCellValue('C6', ": ".$detil_guru['nmkelas']);
+        $objPHPExcel->getActiveSheet()->setCellValue('B6', $id_kelas);
+        $objPHPExcel->getActiveSheet()->setCellValue('C6', ": ".$nm_kelas);
 
         $objPHPExcel->getActiveSheet()->getStyle('C4:C6')->getFont()->setBold(true);
         $objPHPExcel->getActiveSheet()->getStyle('B4:B6')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
@@ -131,59 +105,116 @@ class N_keterampilan extends CI_Controller {
 
         $kolom_awal = 2;
         $kolom = $kolom_awal;
-        foreach($d_kd as $k) {
-            $objPHPExcel->getActiveSheet()->setCellValue($this->kolom_xl[$kolom].'7', $k['kode']);
+        foreach($get_nilai['data_kd'] as $k) {
+            $objPHPExcel->getActiveSheet()->setCellValue($this->kolom_xl[$kolom].'7', "KD ".$k['nama']);
             $objPHPExcel->getActiveSheet()->getColumnDimension($this->kolom_xl[$kolom])->setWidth(10);
             $kolom++;
         }
-        $kolom_akhir_kd = ($kolom-1);
 
-        foreach($d_kd as $k) {        
-            $objPHPExcel->getActiveSheet()->setCellValue($this->kolom_xl[$kolom].'7', $kolom);
-            $objPHPExcel->getActiveSheet()->getColumnDimension($this->kolom_xl[$kolom])->setVisible(FALSE);
-            $kolom++;
+        $kolom_akhir_kd = ($kolom-1);
+        $kolom_uts = $kolom;
+        $kolom_uas = ($kolom+1);
+
+        $objPHPExcel->getActiveSheet()->getColumnDimension($this->kolom_xl[$kolom])->setVisible(FALSE);
+        $kolom++;            
+        foreach($get_nilai['data_kd'] as $k) {        
+            //$objPHPExcel->getActiveSheet()->setCellValue($this->kolom_xl[$kolom].'7', $kolom);
+            if (!empty($this->kolom_xl[$kolom])) {
+                $objPHPExcel->getActiveSheet()->getColumnDimension($this->kolom_xl[$kolom])->setVisible(FALSE);
+                $kolom++;
+            }
         }
+        
         //bds = baris mulai data nilai
         $bds = 8;
-        if (!empty($d_nilai)) {
+
+        if (!empty($get_nilai['data_np'])) {
+            /* JIKA NILAI TIDAK KOSONG */
             $no = 1;
-            foreach ($d_nilai as $ke => $dn) {
+            foreach ($get_nilai['data_np'] as $id_siswa => $dn) {
+                $nama = empty($get_nilai['data_siswa'][$id_siswa]['nama']) ? "" : $get_nilai['data_siswa'][$id_siswa]['nama'];
+                
                 $objPHPExcel->getActiveSheet()->setCellValue('A'.$bds, $no);
-                $objPHPExcel->getActiveSheet()->setCellValue('B'.$bds, $dn['nama']);
+                $objPHPExcel->getActiveSheet()->setCellValue('B'.$bds, $nama);
                 
                 $klm = $kolom_awal;
-                if (!empty($d_kd)) {
-                    foreach ($d_kd as $k => $v) {
-                        $id_siswa = $ke;
-                        $id_kd = $k;
-                        
-                        $nilai_uh = empty($dn["h"][$id_kd]["nilai_angka"]) ? '' : $dn["h"][$id_kd]["nilai_angka"];
-                        $objPHPExcel->getActiveSheet()->setCellValue($this->kolom_xl[$klm].$bds, $nilai_uh);
-                        $klm++;
-                    }
-                }
 
-                foreach ($d_kd as $k => $v) {
-                    $id_siswa = $ke;
-                    $id_kd = $k;
-                    
-                    $objPHPExcel->getActiveSheet()->setCellValue($this->kolom_xl[$klm].$bds, "h-".$id_kd."-".$id_siswa);                        
+                foreach($get_nilai['data_kd'] as $id_kd => $d_kd) {
+                    $nilai_uh = empty($dn[$id_kd]) ? '' : $dn[$id_kd];
+                    $objPHPExcel->getActiveSheet()->setCellValue($this->kolom_xl[$klm].$bds, $nilai_uh);
                     $klm++;
                 }
 
-                $objPHPExcel->getActiveSheet()->setCellValue($this->kolom_xl[$klm].$bds, "=iferror(round(average(".$this->kolom_xl[$kolom_awal].$bds.":".$this->kolom_xl[$kolom_akhir_kd].$bds."),0),0)"); 
+                $objPHPExcel->getActiveSheet()->setCellValue($this->kolom_xl[$klm].$bds, $id_siswa);
+                $klm++;
+                
+                foreach ($get_nilai['data_kd'] as $k => $v) {
+                    $id_siswa = $id_siswa;
+                    $id_kd = $k;
+                    
+                    $objPHPExcel->getActiveSheet()->setCellValue($this->kolom_xl[$klm].$bds, "h-".$id_kd);                        
+                    $klm++;
+                }
+
+                $c_nh = $this->config->item('pnp_h');
+                $jml_pn = ($c_nh);
+
+                $rumus = "=round(((SUM(".$this->kolom_xl[$kolom_awal].$bds.":".$this->kolom_xl[$kolom_akhir_kd].$bds.")/".$jml_kd."*".($c_nh/$jml_pn).")),0)";
+                //echo $rumus."<br>";
+
+                $objPHPExcel->getActiveSheet()->setCellValue($this->kolom_xl[$klm].$bds, $rumus);
+                $klm++;
+
                 $bds++;
                 $no++;
                 
             }
-            $objPHPExcel->getActiveSheet()->setCellValue($this->kolom_xl[$klm].'7', 'NK Akhir');
+            $objPHPExcel->getActiveSheet()->setCellValue($this->kolom_xl[($klm-1)].'7', 'NP Akhir');
         } else {
-            exit("KD belum diinput...!");
+            /* JIKA NILAI MASIH KOSONG */
+
+            $no = 1;
+            foreach ($get_nilai['data_siswa'] as $id_siswa => $dt_siswa) {              
+                $nama = $dt_siswa['nama'];
+                $objPHPExcel->getActiveSheet()->setCellValue('A'.$bds, $no);
+                $objPHPExcel->getActiveSheet()->setCellValue('B'.$bds, $nama);
+                
+                $klm = $kolom_awal;
+
+                foreach($get_nilai['data_kd'] as $id_kd => $d_kd) {
+                    $nilai_uh = '';
+                    $objPHPExcel->getActiveSheet()->setCellValue($this->kolom_xl[$kolom].'7', $nilai_uh);
+                    $klm++;
+                }
+
+                $objPHPExcel->getActiveSheet()->setCellValue($this->kolom_xl[$klm].$bds, $id_siswa);
+                $klm++;
+                
+                foreach ($get_nilai['data_kd'] as $id_kd => $dt_kd) {                    
+                    $objPHPExcel->getActiveSheet()->setCellValue($this->kolom_xl[$klm].$bds, "h-".$id_kd);
+                    $klm++;
+                }
+
+                $c_nh = $this->config->item('pnp_h');
+                $jml_pn = ($c_nh);
+
+                $rumus = "=round(((SUM(".$this->kolom_xl[$kolom_awal].$bds.":".$this->kolom_xl[$kolom_akhir_kd].$bds.")/".$jml_kd."*".($c_nh/$jml_pn).")),0)";
+
+                $objPHPExcel->getActiveSheet()->setCellValue($this->kolom_xl[$klm].$bds, $rumus);
+                $klm++;
+
+                $bds++;
+                $no++;
+                
+            }
+            $objPHPExcel->getActiveSheet()->setCellValue($this->kolom_xl[($klm-1)].'7', 'NP Akhir');
         }
 
+        //exit;
+
         $koordinat_awal = "C8";
-        $koordinat_akhir = $this->kolom_xl[(($kolom-1)-$jml_kd)].($bds-1);
-        
+        $koordinat_akhir = $this->kolom_xl[(($kolom-2)-$jml_kd)].($bds-1);
+
         $objPHPExcel->getActiveSheet()->getStyle($koordinat_awal.':'.$koordinat_akhir)->applyFromArray(
         array('fill'    => array(
                                     'type'      => PHPExcel_Style_Fill::FILL_SOLID,
@@ -191,7 +222,6 @@ class N_keterampilan extends CI_Controller {
                                 )
              )
         );    
-
         //proteksi cell
         $objPHPExcel->getActiveSheet()->getProtection()->setPassword('super90');
         $objPHPExcel->getActiveSheet()->getProtection()->setSheet(true);
@@ -202,10 +232,10 @@ class N_keterampilan extends CI_Controller {
         //proteksi kecuali untuk sheet
         $objPHPExcel->getActiveSheet()->getStyle($koordinat_awal.":".$koordinat_akhir)->getProtection()->setLocked(PHPExcel_Style_Protection::PROTECTION_UNPROTECTED);
 
-
+        $nama_file = "NK_".str_replace(" ","",$get_nilai['meta']['nmkelas'])."_".str_replace(" ", "_", $get_nilai['meta']['nmmapel']).'_'.str_replace(" ", "_", $get_nilai['meta']['nmguru']).'.xlsx';
         // Redirect output to a client’s web browser (Excel2007)
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="NK_'.str_replace(" ","",$detil_guru['nmkelas'])."_".str_replace(" ", "_", $detil_guru['nmmapel']).'_'.str_replace(" ", "_", $detil_guru['nmguru']).'.xlsx"');
+        header('Content-Disposition: attachment;filename="'.$nama_file.'"');
         header('Cache-Control: max-age=0');
         // If you're serving to IE 9, then the following may be needed
         header('Cache-Control: max-age=1');
@@ -216,13 +246,15 @@ class N_keterampilan extends CI_Controller {
         header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
         header ('Pragma: public'); // HTTP/1.0
 
+        
         $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
         $objWriter->save('php://output');
-        exit;
+        die();
     }
 
     public function upload($bawa) {
-        $pc_bawa = explode("-", $bawa);
+        $this->db->where('id', $bawa);
+        $get_guru_mapel = $this->db->get('t_guru_mapel')->row_array();
         
         $detil_guru = $this->db->query("SELECT 
                                          a.id, a.id_guru, b.nama nmmapel, c.nama nmkelas, d.nama nmguru
@@ -230,11 +262,12 @@ class N_keterampilan extends CI_Controller {
                                          INNER JOIN m_mapel b ON a.id_mapel = b.id 
                                          INNER JOIN m_kelas c ON a.id_kelas = c.id
                                          INNER JOIN m_guru d ON a.id_guru = d.id 
-                                         WHERE b.id = ".$pc_bawa[0]." AND c.id = ".$pc_bawa[1]." AND a.tasm = '".$this->d['tasm']."'")->row_array();
+                                         WHERE b.id = ".$get_guru_mapel['id_mapel']." AND c.id = ".$get_guru_mapel['id_kelas']."
+                                         AND a.tasm = '".$this->d['c']['ta_tasm']."'")->row_array();
         
 
         $this->d['bawa'] = $detil_guru;
-        $this->d['id_kelas'] = $pc_bawa[1];
+        $this->d['id_kelas'] = $get_guru_mapel['id_kelas'];
         $this->d['p'] = "form";
         $this->load->view("template_utama", $this->d);
     }
@@ -248,61 +281,46 @@ class N_keterampilan extends CI_Controller {
                                         a.*, b.nama nmmapel, c.nama nmkelas, c.tingkat tingkat
                                         FROM t_guru_mapel a
                                         INNER JOIN m_mapel b ON a.id_mapel = b.id 
-                                        INNER JOIN m_kelas c ON a.id_kelas = c.id
-                                        WHERE a.id = ".$id_guru_mapel." AND c.id = ".$id_kelas."")->row_array();
-               
-
+                                        INNER JOIN m_kelas c ON a.id_kelas = c.id 
+                                        WHERE a.id  = '$id_guru_mapel'")->row_array();
         $list_kd = $this->db->query("SELECT * FROM t_mapel_kd 
-                                    WHERE id_guru = '".$detil_mp['id_guru']."'
-                                    AND id_mapel = '".$detil_mp['id_mapel']."'
+                                    WHERE id_mapel = '".$detil_mp['id_mapel']."'
                                     AND tingkat = '".$detil_mp['tingkat']."'
-                                    AND semester = '".$this->d['semester']."'
-                                    AND jenis = 'K'");
+                                    AND jenis = 'P'
+                                    AND semester = '".$this->d['c']['ta_semester']."'");
         $d_list_kd = $list_kd->result_array();
         $j_list_kd = $list_kd->num_rows();
 
-        $q_siswa_kelas = $this->db->query("SELECT a.id_siswa FROM t_kelas_siswa a WHERE a.id_kelas = '".$id_kelas."' AND a.ta = '".$this->d['tahun']."'");
+        $q_siswa_kelas = $this->db->query("SELECT a.id_siswa FROM t_kelas_siswa a WHERE a.id_kelas = '".$id_kelas."' AND a.ta = '".$this->d['c']['ta_tahun']."'");
         $d_list_siswa = $q_siswa_kelas->result_array();        
         $j_list_siswa = $q_siswa_kelas->num_rows();        
 
-
         
-        $idx_kolom_mulai = 2;
-        $idx_kolom_selesai = ($idx_kolom_mulai + (2*$j_list_kd)) - 1;
-        $idx_baris_mulai = 8;
-        $idx_baris_selesai = $idx_baris_mulai + $j_list_siswa;
+        $config['upload_path']          = './upload/temp/';
+        $config['allowed_types']        = 'xls|xlsx';
+        $config['max_size']             = 1024;
 
-        $idx_kolom_hide = $idx_kolom_mulai + $j_list_kd;
+        $this->load->library('upload', $config);
 
-        $target_file = './upload/temp/';
-        move_uploaded_file($_FILES["import_excel"]["tmp_name"], $target_file.$_FILES['import_excel']['name']);
-
-        $file   = explode('.',$_FILES['import_excel']['name']);
-        $length = count($file);
-
-        if($file[$length -1] == 'xlsx' || $file[$length -1] == 'xls') {//jagain barangkali uploadnya selain file excel <span class="wp-smiley wp-emoji wp-emoji-smile" title=":-)">:-)</span>
-            $tmp    = './upload/temp/'.$_FILES['import_excel']['name'];
-            //Baca dari tmp folder jadi file ga perlu jadi sampah di server :-p
+        if ( ! $this->upload->do_upload('import_excel')) {
+            echo json_encode($this->upload->display_errors());
+        } else {
+            $upload_data = $this->upload->data();
+            $tmp = './upload/temp/'.$upload_data['file_name'];
             
             $this->load->library('excel');//Load library excelnya
             $read   = PHPExcel_IOFactory::createReaderForFile($tmp);
             $read->setReadDataOnly(true);
             $excel  = $read->load($tmp);
 
-            //echo $tmp;
-    
-            $_sheet = $excel->setActiveSheetIndexByName('Worksheet');//Kunci sheetnye biar kagak lepas :-p
-            
+            $_sheet = $excel->setActiveSheetIndexByName('Worksheet'); 
 
             $x_id_mapel = $_sheet->getCell('B4')->getCalculatedValue();
             $x_id_guru = $_sheet->getCell('B5')->getCalculatedValue();
             $x_id_kelas = $_sheet->getCell('B6')->getCalculatedValue();
-            
-            
-            // echo $x_id_mapel."-".$x_id_guru."-".$x_id_kelas."<br>";
-            // echo $detil_mp['id_mapel']."-".$detil_mp['id_guru']."-".$detil_mp['id_kelas']."<br>";
-            // exit;
-            
+
+            //echo $x_id_mapel."/".$detil_mp['id_mapel']."-".$x_id_guru."/".$detil_mp['id_guru']."-".$x_id_kelas."/".$detil_mp['id_kelas'];
+
             if ($x_id_mapel != $detil_mp['id_mapel'] || $x_id_guru != $detil_mp['id_guru'] || $x_id_kelas != $detil_mp['id_kelas']) {
                 echo "File Excel SALAH";
                 exit;
@@ -310,220 +328,113 @@ class N_keterampilan extends CI_Controller {
 
             $data = array();
 
-            //ambil id_siwa mumet
-            
             //var tetap
-            $tasm = $this->d['tasm'];
+            $tasm = $this->d['c']['ta_tasm'];
             $id_guru_mapel = $id_guru_mapel;
             $id_mapel = $detil_mp['id_mapel'];
 
 
+            $idx_kolom_mulai = 2;
+            // $idx_kolom_selesai = ($idx_kolom_mulai + ((2*$j_list_kd) + 2)) - 1;
+            $idx_baris_mulai = 8;
+            $idx_baris_selesai = $idx_baris_mulai + $j_list_siswa;
+
+            $idx_kolom_id_siswa = $idx_kolom_mulai + $j_list_kd;
+            $idx_kolom_hide = $idx_kolom_mulai + $j_list_kd + 1;
+
+            $jumlah = 0;
+            $tambah = 0;
+            $edit = 0;
+
             for ($b = $idx_baris_mulai; $b < $idx_baris_selesai; $b++) {
-                $xy_id_siswa = $this->kolom_xl[$idx_kolom_hide].$b;
-                $va_xy_id_siswa = $_sheet->getCell($xy_id_siswa)->getCalculatedValue();
-                $pc_xy_id_siswa = explode("-", $va_xy_id_siswa);
-                
-                $id_siswa = $pc_xy_id_siswa[2];
+                $id_siswa = $_sheet->getCell($this->kolom_xl[$idx_kolom_id_siswa].$b)->getCalculatedValue();
 
-                //nilai kd
-                for ($k = $idx_kolom_mulai; $k < ($idx_kolom_hide); $k++) {
-                    $nilai = $_sheet->getCell($this->kolom_xl[$k].$b)->getCalculatedValue();
-                    $hide = $_sheet->getCell($this->kolom_xl[($k+$j_list_kd)].$b)->getCalculatedValue();
+                for ($k = $idx_kolom_hide; $k < ($idx_kolom_hide + $j_list_kd); $k++) {
+                    // kolom nilai yg asli
+                    $kolom_nilai = ($k - ($j_list_kd + 1));
+                    $nilai = $_sheet->getCell($this->kolom_xl[$kolom_nilai].$b)->getCalculatedValue();
+                    // kolom properties nilai yg di hiden
+                    $hide = $_sheet->getCell($this->kolom_xl[$k].$b)->getCalculatedValue();
+                    
                     $pc_hide = explode("-", $hide);
+                    $id_mapel_kd = !empty($pc_hide[1]) ? $pc_hide[1] : 0;
 
-                    //echo $hide;
+                    $this->db->where('tasm', $tasm);
+                    $this->db->where('id_guru_mapel', $id_guru_mapel);
+                    $this->db->where('id_mapel_kd', $id_mapel_kd);
+                    $this->db->where('id_siswa', $id_siswa);
+                    $this->db->select('id');
+                    $cek_sudah_ada = $this->db->get('t_nilai_ket')->num_rows();
 
-                    $data[] = array("tasm"=>$tasm, "id_guru_mapel"=>$id_guru_mapel, "id_mapel_kd"=>$pc_hide[1], "id_siswa"=>$id_siswa, "nilai"=>$nilai);
-                
-                }
+                    if ($cek_sudah_ada > 0) {
+                        $edit++;
+                        $this->db->where('tasm', $tasm);
+                        $this->db->where('id_guru_mapel', $id_guru_mapel);
+                        $this->db->where('id_mapel_kd', $id_mapel_kd);
+                        $this->db->where('id_siswa', $id_siswa);
+                        $this->db->update('t_nilai_ket', ['nilai'=>$nilai]);
+                    } else {
+                        $tambah++;
+                        $this->db->insert('t_nilai_ket', [
+                                "tasm"=>$tasm, 
+                                "id_guru_mapel"=>$id_guru_mapel, 
+                                "id_mapel_kd"=>$id_mapel_kd, 
+                                "id_siswa"=>$id_siswa, 
+                                "nilai"=>$nilai
+                            ]
+                        );
+                    }
+                } 
             }
 
-            $strq = "REPLACE INTO t_nilai_ket (tasm, id_guru_mapel, id_mapel_kd, id_siswa, nilai) VALUES ";
-            $arr_perdata = array();
-            foreach ($data as $d) {
-                $arr_perdata[] = "('".$d['tasm']."', '".$d['id_guru_mapel']."', '".$d['id_mapel_kd']."', '".$d['id_siswa']."', '".$d['nilai']."')";
-            }
 
-            //j($arr_perdata);
-            //exit;
-
-            $strq .= implode(",", $arr_perdata).";";
-            $this->db->query($strq);
-
-            @unlink('./upload/temp/form_upload_nilai_pindah.xlsx');
-            
-            $this->session->set_flashdata('k', '<div class="alert alert-success">Nilai berhasil diupload..</div>');
+            $this->session->set_flashdata('k', '<div class="alert alert-success">Nilai berhasil diupload. Edit: '.$edit.', Insert: '.$tambah.'</div>');
             redirect('n_keterampilan/index/'.$id_guru_mapel);
 
-        } else {
-            exit('Buka File Excel...');//pesan error tipe file tidak tepat
-        }
-        redirect('n_keterampilan/index/'.$id_guru_mapel);
+        } 
     }
 
-    public function cetak($bawa,$tasm=0) {
-        $tasm = $tasm == 0 ? $this->d['tasm'] : $tasm;
-        $semester = substr($tasm,4,1);
-        
-        $pc_bawa = explode("-", $bawa);
-
-        $html = '';
-
-        $detil_guru = $this->db->query("SELECT 
-                                b.nama nmmapel, c.nama nmkelas, d.nama nmguru
-                                FROM t_guru_mapel a
-                                INNER JOIN m_mapel b ON a.id_mapel = b.id 
-                                INNER JOIN m_kelas c ON a.id_kelas = c.id
-                                INNER JOIN m_guru d ON a.id_guru = d.id 
-                                WHERE b.id = ".$pc_bawa[0]." AND c.id = ".$pc_bawa[1]." 
-                                AND a.tasm = '".$tasm."'")->row_array();
-        //j($detil_guru);
-
-        $q_nilai_harian = $this->db->query("SELECT 
-                                d.nama nmsiswa, a.id_mapel_kd, a.id_siswa, a.nilai
-                                FROM t_nilai_ket a
-                                LEFT JOIN t_mapel_kd b ON a.id_mapel_kd = b.id
-                                LEFT JOIN t_kelas_siswa c ON CONCAT(a.id_siswa,LEFT(a.tasm,4)) = CONCAT(c.id_siswa,c.ta)
-                                LEFT JOIN m_siswa d ON c.id_siswa = d.id
-                                WHERE c.id_kelas = ".$pc_bawa[1]." AND b.id_mapel = ".$pc_bawa[0]."
-                                AND a.tasm = '".$tasm."'
-                                ORDER BY d.nama ASC")->result_array(); 
-        //echo $this->db->last_query();
-
-        $q_kd_guru_ini = $this->db->query("SELECT a.* 
-                                    FROM t_mapel_kd a
-                                    LEFT JOIN m_kelas b ON a.tingkat = b.tingkat
-                                    WHERE a.id_guru = '".$this->d['admkonid']."'
-                                    AND a.id_mapel = '".$pc_bawa[0]."'
-                                    AND b.id = ".$pc_bawa[1]." 
-                                    AND a.semester = '".$semester."'
-                                    AND a.jenis = 'K'")->result_array();
-        /*
-        $q_kd_guru_ini = $this->db->query("SELECT 
-                                a.id, a.no_kd, a.nama_kd
-                                FROM t_mapel_kd a
-                                LEFT JOIN m_kelas b ON a.tingkat = b.tingkat
-                                WHERE a.id_mapel = ".$pc_bawa[0]." AND b.id = ".$pc_bawa[1]." AND a.jenis = 'K'")->result_array();
-        */
-        //j($q_nilai_harian);
-
-        $d_kd = array();
-
-        if (!empty($q_kd_guru_ini)) {
-            foreach ($q_kd_guru_ini as $v) {
-                $idx = $v['id'];
-                $d_kd[$idx]['kode'] = $v['no_kd'];
-                $d_kd[$idx]['nama_kd'] = $v['nama_kd'];
-            }
-        }
-
-        $d_nilai = array();
-
-        if (!empty($q_nilai_harian)) {
-            foreach ($q_nilai_harian as $d) {
-                $idx1 = $d['id_siswa'];
-                $idx2 = $d['id_mapel_kd'];
-
-                $d_nilai[$idx1]['nama'] = $d['nmsiswa'];
-                $d_nilai[$idx1]['h'][$idx2]['nilai_huruf'] = nilai_huruf($d['nilai']);
-                $d_nilai[$idx1]['h'][$idx2]['nilai_pre'] = nilai_pre($d['nilai']);
-                $d_nilai[$idx1]['h'][$idx2]['nilai_angka'] = $d['nilai'];
-            }
-        } 
-
-        //j($d_kd);
-
-        $jml_kd = sizeof($d_kd);
+    public function cetak($bawa) {
+        $this->load->model('n_keterampilan_model', 'nkm');
+        $get_nilai = $this->nkm->gen_nilai($bawa);
+        $jml_kd = count($get_nilai['data_kd']);
 
         $html = '<p align="left"><b>REKAP NILAI KETERAMPILAN</b>
                 <br>
-                Mata Pelajaran : '.$detil_guru['nmmapel'].', Kelas : '.$detil_guru['nmkelas'].', Guru : '.$detil_guru['nmguru'].', Tahun Pelajaran: '.$tasm.'<hr style="border: solid 1px #000; margin-top: -10px"></p>
-                <table class="table"><thead><tr>
-                <th rowspan="2">No</th>
-                <th rowspan="2">Nama</th>
-                <th colspan="'.$jml_kd.'">Kode KD</th>
-                <th rowspan="2">Rata-rata UH</th>
-                <th colspan="3">Nilai Akhir</th>
-                </tr>
-                <tr>';
+                Mata Pelajaran : '.$get_nilai['meta']['nmmapel'].', Kelas : '.$get_nilai['meta']['nmkelas'].', Guru : '.$get_nilai['meta']['nmguru'].'. Tahun Pelajaran '.$get_nilai['meta']['tasm'].'<hr style="border: solid 1px #000; margin-top: -10px"></p>';
 
-        if (!empty($d_kd)) {
-            foreach ($d_kd as $kd) {
-                $html .= '<th>'.$kd['kode'].'</th>';
+        $html .= '<table class="table"><tr><td rowspan="2">Nama</td><td colspan="'.$jml_kd.'">NH</td><td rowspan="2">Rata-rata NH / Nilai Akhir</td></tr><tr>';
+        foreach ($get_nilai['data_kd'] as $k) {
+            $html .= '<td>KD '.$k['nama'].'</td>';
+        }
+        $html .= '</tr>';
+
+        foreach ($get_nilai['data_siswa'] as $id_siswa => $s) {
+            $html .= '<tr><td>'.$s['nama'].'</td>';
+            $jml_nilai_kd = 0;
+            foreach ($get_nilai['data_kd'] as $k) {
+                $id_mapel_kd = $k['id'];
+                $nilai_kd = !empty($get_nilai['data_np'][$id_siswa][$id_mapel_kd]) ? number_format($get_nilai['data_np'][$id_siswa][$id_mapel_kd]) : 0;
+                $jml_nilai_kd += $nilai_kd;
+
+                $html .= '<td>'.$nilai_kd.'</td>';
             }
+            if ($jml_kd > 0) {
+                $rata_rata_nilai_kd = number_format($jml_nilai_kd / $jml_kd);
+            } else {
+                $rata_rata_nilai_kd = 0;
+            }
+            $html .= '<td>'.$rata_rata_nilai_kd.'</td></tr>';
+
         }
 
-        //j($d_nilai);
+        $html .= '</table>';
 
-        $html .= '<th>Nilai</th><th>Predikat</th><th>Deskripsi</th></tr></thead><tbody>';
-
-        if (!empty($d_nilai)) {
-            $no = 1;
-            foreach ($d_nilai as $ke => $dn) {
-                
-                $html .= '<tr><td class="ctr">'.$no.'</td><td>'.$dn['nama'].'</td>';
-
-                $jml_nilai_tugas = 0;
-
-                $array_kurang = array();
-                $array_cukup = array();
-                $array_baik = array();
-                $array_sangat_baik = array();
-                $array_undefined = array();
-                $kurang = "";
-                $cukup = "";
-                $baik = "";
-                $sangat_baik = "";
-                $undefined = "";
-                
-                if (!empty($d_kd)) {
-                    foreach ($d_kd as $k => $v) {
-                        $id_siswa = $ke;
-                        $id_kd = $k;
-                        $nil_huruf = empty($dn["h"][$id_kd]['nilai_huruf']) ? "" : $dn["h"][$id_kd]['nilai_huruf'];
-
-                        if ($nil_huruf == "D") {
-                            $array_kurang[] = $v['nama_kd'];
-                        } else if ($nil_huruf == "C") {
-                            $array_cukup[] = $v['nama_kd'];
-                        } else if ($nil_huruf == "B") {
-                            $array_baik[] = $v['nama_kd'];
-                        } else if ($nil_huruf == "A") {
-                            $array_sangat_baik[] = $v['nama_kd'];
-                        } else {
-                            $array_undefined[] = "un";
-                        }
-
-                        $nilai_uh = empty($dn["h"][$id_kd]["nilai_angka"]) ? '' : $dn["h"][$id_kd]["nilai_angka"];
-
-                        //$dn[119]["h"][45]["nilai_angka"]
-
-                        $html .= '<td class="ctr">'.$nilai_uh.'</td>';
-                        $jml_nilai_tugas += $nilai_uh;
-
-                        //$html .= '<td>'.var_dump($dn).'</td>';
-                    }
-                }
-
-                $n_h    = number_format($jml_nilai_tugas / $jml_kd);
-                $nilai_akhir = number_format($n_h);
-
-                $kurang = empty($array_kurang) ? "" : "KURANG, pada : ".implode(", ", $array_kurang)."; ";
-                $cukup = empty($array_cukup) ? "" : "CUKUP, pada : ".implode(", ", $array_cukup)."; ";
-                $baik = empty($array_baik) ? "" : "BAIK, pada : ".implode(", ", $array_baik)."; ";
-                $sangat_baik = empty($array_sangat_baik) ? "" : "SANGAT BAIK, pada : ".implode(", ", $array_sangat_baik)."; ";
-                
-                $html .= '<td class="ctr">'.$n_h.'</td><td class="ctr">'.$nilai_akhir.'</td><td class="ctr">'.nilai_huruf($nilai_akhir).'</td><td>'.$kurang.$cukup.$baik.$sangat_baik.'</td>';
-
-                $no++;
-            }
-        } else {
-            $html .= '<tr><td colspan="'.($jml_kd+6).'">Belum ada data</td></tr>';
-        }
 
         $this->d['html'] = $html;
         $this->load->view('cetak', $this->d);
     }
+
     public function ambil_siswa($kelas) {
         $id_kd = $this->uri->segment(4);
         $list_data = array();
@@ -540,11 +451,9 @@ class N_keterampilan extends CI_Controller {
                                         INNER JOIN t_kelas_siswa g ON a.id_siswa = g.id_siswa
                                         INNER JOIN m_kelas h ON g.id_kelas = h.id
                                         WHERE h.id = $kelas AND a.id_mapel_kd = $id_kd 
-                                        AND a.tasm = '".$this->d['tasm']."'
+                                        AND a.tasm = '".$this->d['c']['ta_tasm']."'
                                         ORDER BY b.nama
                                         ")->result_array();
-                
-        
 
         if (empty($ambil_nilai)) {
             $list_data = $this->db->query("SELECT 
@@ -552,7 +461,7 @@ class N_keterampilan extends CI_Controller {
                                         FROM t_kelas_siswa a 
                                         INNER JOIN m_siswa b ON a.id_siswa = b.id
                                         WHERE a.id_kelas = $kelas
-                                        AND a.ta = '".$this->d['tahun']."'
+                                        AND a.ta = '".$this->d['c']['ta_tahun']."'
                                         ORDER BY b.nama")->result_array();
         } else {
             $list_data = $ambil_nilai;
@@ -567,50 +476,32 @@ class N_keterampilan extends CI_Controller {
     }
     public function simpan_nilai() {
         $p = $this->input->post();
-        $jumlah_sudah = 0;
+        $tambah = 0;
+        $edit = 0;
         $i = 0;
         foreach ($p['nilai'] as $s) {
-            
-            $cek = $this->db->query("SELECT id FROM t_nilai_ket WHERE id_guru_mapel = '".$p['id_guru_mapel']."' AND id_mapel_kd = '".$p['id_mapel_kd']."' AND id_siswa = '".$p['id_siswa'][$i]."'")->num_rows();
-            //echo $this->db->last_query();
-            //exit;
+            $cek = $this->db->query("SELECT id FROM t_nilai_ket WHERE tasm = '".$this->d['c']['ta_tasm']."' AND id_guru_mapel = '".$p['id_guru_mapel']."' AND id_mapel_kd = '".$p['id_mapel_kd']."' AND id_siswa = '".$p['id_siswa'][$i]."'")->num_rows();
+
             if ($cek > 0) {
-                $jumlah_sudah ++;
-                $this->db->query("UPDATE t_nilai_ket SET tasm = '".$this->d['tasm']."', nilai = '$s' WHERE id_guru_mapel = '".$p['id_guru_mapel']."' AND id_mapel_kd = '".$p['id_mapel_kd']."' AND id_siswa = '".$p['id_siswa'][$i]."'");
+                $edit++;
+                $this->db->query("UPDATE t_nilai_ket SET nilai = '$s' WHERE tasm = '".$this->d['c']['ta_tasm']."' AND id_guru_mapel = '".$p['id_guru_mapel']."' AND id_mapel_kd = '".$p['id_mapel_kd']."' AND id_siswa = '".$p['id_siswa'][$i]."'");
             } else {
-                $this->db->query("INSERT INTO t_nilai_ket (tasm,id_guru_mapel, id_mapel_kd, id_siswa, nilai) VALUES ('".$this->d['tasm']."', '".$p['id_guru_mapel']."', '".$p['id_mapel_kd']."', '".$p['id_siswa'][$i]."', '".$s."')");
+                $tambah++;
+                $this->db->query("INSERT INTO t_nilai_ket (tasm,id_guru_mapel, id_mapel_kd, id_siswa, nilai) VALUES ('".$this->d['c']['ta_tasm']."', '".$p['id_guru_mapel']."', '".$p['id_mapel_kd']."', '".$p['id_siswa'][$i]."', '".$s."')");
             }
             $i++;
         }
         
         $d['status'] = "ok";
-        $d['data'] = "Data berhasil disimpan";
+        $d['data'] = $i." Data berhasil disimpan. Tambah: ".$tambah.", Edit: ".$edit;
         j($d);
     }
+
     public function hapus($id) {
         $this->db->query("DELETE FROM t_guru_mapel WHERE id = '$id'");
         $d['status'] = "ok";
         $d['data'] = "Data berhasil dihapus";
         
         j($d);
-    }
-    public function index($id) {
-
-        $this->session->set_userdata("id_guru_mapel", $id);
-        
-        $this->d['detil_mp'] = $this->db->query("SELECT 
-                                        a.*, b.nama nmmapel, c.nama nmkelas, c.tingkat tingkat
-                                        FROM t_guru_mapel a
-                                        INNER JOIN m_mapel b ON a.id_mapel = b.id 
-                                        INNER JOIN m_kelas c ON a.id_kelas = c.id 
-                                        WHERE a.id  = '$id'")->row_array();
-        $this->d['list_kd'] = $this->db->query("SELECT * FROM t_mapel_kd 
-                                    WHERE id_guru = '".$this->d['detil_mp']['id_guru']."'
-                                    AND id_mapel = '".$this->d['detil_mp']['id_mapel']."'
-                                    AND tingkat = '".$this->d['detil_mp']['tingkat']."'
-                                    AND semester = '".$this->d['semester']."'
-                                    AND jenis = 'K'")->result_array();
-    	$this->d['p'] = "list";
-        $this->load->view("template_utama", $this->d);
     }
 }

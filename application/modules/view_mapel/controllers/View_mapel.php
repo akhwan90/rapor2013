@@ -7,7 +7,7 @@ class View_mapel extends Master {
         parent::__construct();
         cek_aktif();
 
-        $akses = array("admin", "siswa", "guru");
+        $akses = array("guru");
         cek_hak_akses($this->d['s']['level'], $akses);
 
         $this->d['nama_form'] = "f_login";
@@ -55,9 +55,9 @@ class View_mapel extends Master {
         $html = '<center>DAFTAR HADIR / PRESENSI SISWA</center><br>
         <table class="tablef">
             <tr>
-                <td width="15%">Satuan Kerja</td>
+                <td width="15%">Nama Sekolah</td>
                 <td width="2%">:</td>
-                <td width="28%">MTs N 5 Kulon Progo</td>
+                <td width="28%">'.$this->d['c']['sekolah_nama'].'</td>
                 <td width="10%"></td>
                 <td width="15%">Kelas/Semester</td>
                 <td width="2%">:</td>
@@ -93,14 +93,15 @@ class View_mapel extends Master {
             }
         }
 
+
         $html .= '<table class="tablef" style="margin-top: 10px">
             <tr>
             <td width="15%"></td>
             <td width="25%">
             Mengetahui,<br>
-            Kepala Madrasah<br><br><br><br>
-            Drs. Sukarlan<br>
-            NIP. 19650422 200012 1 001
+            '.$this->d['c']['sekolah_sebutan_kepala'].'<br><br><br><br>
+            '.$this->d['c']['ta_kepsek_nama'].'<br>
+            NIP. '.$this->d['c']['ta_kepsek_nip'].'
             </td>
             <td width="25%"></td>
             <td width="25%">

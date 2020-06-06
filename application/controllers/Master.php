@@ -15,6 +15,7 @@ class Master extends CI_Controller {
 
         $this->d['c']['sekolah_nama'] = $get_sekolah['nama_sekolah']; 
         $this->d['c']['sekolah_alamat'] = $get_sekolah['alamat']; 
+        $this->d['c']['sekolah_sebutan_kepala'] = $get_sekolah['sebutan_kepala']; 
         $this->d['c']['ta_tahun'] = substr($get_tahun_aktif['tahun'], 0, 4); 
         $this->d['c']['ta_semester'] = substr($get_tahun_aktif['tahun'], 4, 1); 
         $this->d['c']['ta_tasm'] = $get_tahun_aktif['tahun'];

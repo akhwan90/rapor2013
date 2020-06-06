@@ -22,18 +22,9 @@
             <div class="content">
                 <ul class="list-group">
                     <li class="list-group-item"><a href="<?php echo base_url()."n_pengetahuan/index/".$mk['id']; ?>"><i class="fa fa-chevron-right"></i>  Nilai Pengetahuan</a> <!--<a href="#" class="badge pull-right"><i class="fa fa-print"></i> --></li>
-                    <li class="list-group-item"><a href="<?php echo base_url()."n_keterampilan/index/".$mk['id']; ?>"><i class="fa fa-chevron-right"></i>  Nilai Keterampilan</a></li><!-- 
-                    <li class="list-group-item"><a href="<?php echo base_url()."view_mapel/cetak_absensi/".$mk['id']; ?>" target="_blank"><i class="fa fa-chevron-right"></i>  Cetak Presensi</a></li> -->
-                    <!--
-                    <?php 
-                    if ($mk['is_sikap'] == "1") {
-                    ?>
-                    <li class="list-group-item"><a href="<?php echo base_url()."n_sikap_sp/index/".$mk['id']; ?>">Nilai Sikap Spritual</a></li>
-                    <li class="list-group-item"><a href="<?php echo base_url()."n_sikap_so/index/".$mk['id']; ?>">Nilai Sikap Sosial</a></li>
-                    <?php 
-                    }
-                    ?>
-                    -->
+                    <li class="list-group-item"><a href="<?php echo base_url()."n_keterampilan/index/".$mk['id']; ?>"><i class="fa fa-chevron-right"></i>  Nilai Keterampilan</a></li>
+                    <li class="list-group-item"><a href="<?php echo base_url()."view_mapel/cetak_absensi/".$mk['id']; ?>" target="_blank"><i class="fa fa-chevron-right"></i>  Cetak Presensi</a></li>
+                    
                 </ul>
             </div>
         </div>
