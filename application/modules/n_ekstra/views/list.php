@@ -6,7 +6,7 @@
         </p>
     </div>
     -->
-    <div class="col-md-5">
+    <div class="col-md-4">
         <div class="card">
             <div class="header">
                 <h4 class="title">Nilai Ekstrakurikuler</h4>
@@ -28,7 +28,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-7">
+    <div class="col-md-8">
         <div class="card">
             <div class="header">
                 <h4 class="title">Input Nilai Ekstrakurikuler</h4>
@@ -67,10 +67,12 @@
                     if (r.status == "gagal") {
                         noti("danger", r.data);
                     } else {
-                        $("#modal_data").modal('hide');
                         noti("success", r.data);
-                        pagination("datatabel", base_url+"<?php echo $url; ?>/datatable", []);
                     }
+                },
+                error: function(x) {
+                    $("#tbsimpan").attr("disabled", false);
+                    noti('danger', x.responseText);
                 }
             });
             return false;
@@ -84,13 +86,13 @@
         } else {
             $("#id_ekstra").val(id);
             
-            $("#load_nilai").html("Mohon menunggu, sedang mengambil data dari server di Amerika sana, sehingga agak lama... :D");
+            $("#load_nilai").html("Mohon menunggu... :D");
             $.getJSON(base_url+"<?php echo $url; ?>/ambil_siswa/"+id, function(data) {
                 $("#load_nilai").show('slow');
-                html = '<table class="table table-bordered"><thead><tr><th width="10%" rowspan="2">No</th><th width="40%" rowspan="2">Nama</th><th width="50%" colspan="2">Nilai</th></tr><tr><th width="10%">Nilai</th><th width="40%">Deskripsi</th></thead><tbody>';
+                html = '<table class="table table-bordered"><thead><tr><th width="10%" rowspan="2">No</th><th width="30%" rowspan="2">Nama</th><th width="60%" colspan="2">Nilai</th></tr><tr><th width="10%">Nilai</th><th width="50%">Deskripsi</th></thead><tbody>';
                 var i = 1;
                 $.each(data.data, function(k, v) {
-                    var pnilai = ["-","A","B","C"];
+                    var pnilai = ["Tidak Ikut","A","B","C"];
                     html += '<tr><td>'+i+'</td><td>'+v.nmsiswa+'</td><td><input name="id_siswa[]" type="hidden" value="'+v.ids+'"><select name="nilai[]" id="nilai_'+i+'" onchange="return ganti_deskripsi('+i+');" style="padding: 5px" class="form-control input-sm" required>';
                         for (var x = 0; x < pnilai.length; x++) {
                             html += v.nilai == pnilai[x] ? '<option value="'+pnilai[x]+'" selected>'+pnilai[x]+'</option>' : '<option value="'+pnilai[x]+'">'+pnilai[x]+'</option>';

@@ -183,22 +183,10 @@
                     <b><?php echo $c['sekolah_nama']; ?></b>
                 </p>
                 <p class="copyright pull-right">
-                    Waktu proses {elapsed_time} detik. &copy; 2016 
+                    <strong>Tahun Ajaran Aktif: <?=$c['ta_tasm'];?></strong>. Waktu proses {elapsed_time} detik. &copy; 2016 
                 </p>
             </div>
         </footer>
-        <div class="modal" id="tampil_gambar">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-body" id="gambarnya">
-                        <div style="bottom: 0; position: absolute; background: #fff; padding: 0px 20px" id="ucapan"></div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-danger pull-right" data-dismiss="modal" onclick="return hilangkan_gambar();">Nggak tertarik, <span id="is_su"></span> dirumah lebih baik..!!</button>
-                    </div>
-                </div><!-- /.modal-content -->
-            </div><!-- /.modal-dialog -->
-        </div><!-- /.modal -->
     </div>
 </div>
 </body>

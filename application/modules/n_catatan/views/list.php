@@ -13,7 +13,11 @@
                 <tr>
                     <th width="5%">No</th>
                     <th width="35%">Nama</th>
+                    <?php 
+                    if ($c['ta_semester'] == 2) {
+                    ?>
                     <th width="10%">Naik Kelas</th>
+                    <?php } ?>
                     <th width="50%">Catatan</th>
                 </tr>
             </thead>
@@ -32,11 +36,11 @@
                     <tr>
                         <td><?php echo $no; ?></td>
                         <td><?php echo $sk['nama']; ?></td>
-                        <td>
-                            <?php 
-                            echo form_dropdown("naik_".$no,$p_naik,$sk['naik'],'class="form-control input-sm" required id="naik_'.$no.'"');
-                            ?>
-                        </td>
+                        <?php 
+                        if ($c['ta_semester'] == 2) {
+                            echo '<td>'.form_dropdown("naik_".$no,$p_naik,$sk['naik'],'class="form-control input-sm" required id="naik_'.$no.'"').'</td>';
+                        }
+                        ?>
                         <td>
                             <input type="text" name="catatan_<?php echo $no; ?>" value="<?php echo $sk['catatan_wali']; ?>" class="form-control input-sm" id="catatan_<?php echo $no; ?>">
                         </td>
@@ -83,6 +87,10 @@
                     } else {
                         noti("danger", r.data);
                     }
+                },
+                error: function(x) {
+                    $("#tbsimpan").attr("disabled", false);
+                    noti('danger', x.responseText);
                 }
             });
 

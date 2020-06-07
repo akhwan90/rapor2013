@@ -89,6 +89,10 @@
                     } else {
                         noti("danger", r.data);
                     }
+                },
+                error: function(x) {
+                    $("#tbsimpan").attr("disabled", false);
+                    noti('danger', x.responseText);
                 }
             });
 
@@ -112,6 +116,10 @@
             success: function(data) {
                 noti("success", data.data);
                 pagination("datatabel", base_url+"<?php echo $url; ?>/datatable", []);
+            },
+            error: function(x) {
+                $("#tbsimpan").attr("disabled", false);
+                noti('danger', x.responseText);
             }
         });
         return false;
