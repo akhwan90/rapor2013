@@ -48,7 +48,7 @@ class Login extends Master {
                     $id_guru = $d_cek['konid'];
 
                     $this->db->where('a.id_guru', $id_guru);
-                    $this->db->where('a.tasm', $this->d['c']['ta_tahun']);
+                    $this->db->where('a.tasm', $this->d['c']['ta_tasm']);
                     $this->db->select('a.id_kelas, b.nama nmkelas');
                     $this->db->join('m_kelas b', 'a.id_kelas = b.id');
                     $cek_is_wali_kelas = $this->db->get('t_walikelas a')->row_array();

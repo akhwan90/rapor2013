@@ -14,7 +14,7 @@
 	
 	
 	<p align="center"><b>REKAP NILAI SIKAP SPIRITUAL</b>
-	<br><?php echo "Kelas : ".$detil_data['nmkelas'].", Nama Wali : ".$detil_data['nmguru']; ?></p>
+	<br><?php echo "Kelas : ".$detil_wali_kelas['nmkelas'].", Nama Wali : ".$detil_wali_kelas['nmguru']; ?></p>
 
 	<table class="table">
 		<thead>

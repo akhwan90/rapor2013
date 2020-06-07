@@ -14,7 +14,7 @@
 	
 	
 	<p align="center"><b>NILAI ABSENSI</b>
-	<br>Kelas : <?php echo $nama_kelas; ?></p>
+	<br>Kelas : <?php echo $s['walikelas']['nama_walikelas']; ?></p>
 
 	<table class="table">
 		<thead>

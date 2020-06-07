@@ -5,7 +5,7 @@
 <div class="row">
     <div class="col-md-12">
         <p>
-            <a href="<?php echo base_url().$url; ?>/cetak/<?php echo $id_kelas; ?>" class="btn btn-warning" target="_blank"><i class="fa fa-print"></i> Cetak</a>
+            <a href="<?php echo base_url().$url; ?>/cetak/<?php echo $s['walikelas']['id_walikelas']; ?>" class="btn btn-warning" target="_blank"><i class="fa fa-print"></i> Cetak</a>
         </p>
     </div>
 
@@ -96,6 +96,10 @@
                     } else {
                         noti("danger", r.data);
                     }
+                },
+                error: function(x) {
+                    $("#tbsimpan").attr("disabled", false);
+                    noti('danger', x.responseText);
                 }
             });
 

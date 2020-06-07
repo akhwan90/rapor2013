@@ -101,6 +101,10 @@
                     } else {
                         noti("danger", r.data);
                     }
+                },
+                error: function(x) {
+                    $("#tbsimpan").attr("disabled", false);
+                    noti('danger', x.responseText);
                 }
             });
             return false;

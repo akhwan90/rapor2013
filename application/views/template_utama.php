@@ -135,6 +135,7 @@
                 <?php 
                 $level = $this->session->userdata("level");
                 $walikelas = $this->session->userdata("walikelas");
+
                 echo generate_menu($level, $walikelas['is_wali']);  
                 ?>
             </ul>

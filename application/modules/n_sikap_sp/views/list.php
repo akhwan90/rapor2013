@@ -104,6 +104,10 @@
                         } else {
                             noti("danger", "Data gagal disimpan...");
                         }
+                    },
+                    error: function(x) {
+                        $("#tbsimpan").attr("disabled", false);
+                        noti('danger', x.responseText);
                     }
                 });
             }
