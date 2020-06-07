@@ -13,17 +13,18 @@
 <body>
 	<center>
 		<br><br><br><br>
-		<img src="<?php echo base_url(); ?>aset/img/logo_garuda.jpg"><br><br><br>
+		<!-- <img src="<?php echo base_url(); ?>aset/img/logo_garuda.jpg"><br><br><br> -->
+		<br><br><br>
 		<span style="font-size: 14pt"><b style="font-size: 18pt">LAPORAN</b><br>
 		HASIL PENCAPAIAN KOMPETENSI PESERTA DIDIK<br>
-		<?php echo strtoupper($this->config->item('nama_sekolah')); ?>
+		<?php echo strtoupper($c['sekolah_nama']); ?>
 		</span>
 		<br>
 		<br>
 		<br>
 		<br>
 		<br>
-		<img src="<?php echo base_url(); ?>aset/img/logo_kemenag.png"><br>
+		<img src="<?php echo base_url('upload/logo/'.$c['detil_sekolah']['logo']);?>" style="width: 150px"><br>
 		<br>
 		<br>
 		<br>

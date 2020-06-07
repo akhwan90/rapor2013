@@ -28,7 +28,7 @@
                     <td><?php echo $h['nmkelas']; ?></td>
                     <td>
                         <a href="<?php echo base_url('n_pengetahuan/cetak/'.$h['id']); ?>" class="btn btn-info btn-xs" target="_blank">Cetak NP</a>
-                        <a href="<?php echo base_url('n_keterampilan/cetak/'.$h['id_mapel'].'-'.$h['id_kelas'].'/'.$h['tasm']); ?>" class="btn btn-info btn-xs" target="_blank">Cetak NK</a>
+                        <a href="<?php echo base_url('n_keterampilan/cetak/'.$h['id']); ?>" class="btn btn-info btn-xs" target="_blank">Cetak NK</a>
                     </td>
                 </tr>
                 <?php 

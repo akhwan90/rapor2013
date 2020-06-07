@@ -18,12 +18,45 @@ class Data_sekolah extends Master {
         
         $p = $this->input->post();
 
-        $this->db->where('id', 1);
-        $this->db->update('m_sekolah', [
+        $config1['upload_path']          = './upload/logo';
+        $config1['allowed_types']        = 'gif|jpg|png';
+        $config1['max_size']             = 512;
+        $config1['encrypt_name']         = true;
+
+        $this->load->library('upload');
+        $this->upload->initialize($config1);
+
+        $pdata = [
             'nama_sekolah'=>$p['nama_sekolah'],
             'alamat'=>$p['alamat'],
+            'desa'=>$p['desa'],
+            'kec'=>$p['kec'],
+            'kab'=>$p['kab'],
+            'prov'=>$p['prov'],
+            'telp'=>$p['telp'],
+            'email'=>$p['email'],
+            'web'=>$p['web'],
+            'kodepos'=>$p['kodepos'],
             'sebutan_kepala'=>$p['sebutan_kepala'],
-        ]);
+            'nss'=>$p['nss'],
+            'npsn'=>$p['npsn'],
+            'kop_1'=>$p['kop_1'],
+            'kop_2'=>$p['kop_2'],
+        ];
+
+        if ($this->upload->do_upload('logo')) {
+            // get sebelum 
+            $this->db->where('id', 1);
+            $this->db->select('logo');
+            $get_gambar = $this->db->get('m_sekolah');
+
+            @unlink('./upload/logo/'.$get_gambar['logo']);
+
+            $pdata['logo'] = $this->upload->data('file_name');
+        }
+
+        $this->db->where('id', 1);
+        $this->db->update('m_sekolah', $pdata);
 
         $d['status'] = "sukses";
         $d['data'] = "Data Sekolah Berhasil Diupdate";

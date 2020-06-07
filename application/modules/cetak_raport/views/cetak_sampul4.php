@@ -15,13 +15,13 @@
 	<table>
 		<tr>
 			<td width="10%">
-			<img src="<?php echo base_url(); ?>aset/img/logo_kemenag.png" style="margin-top: 10px; width: 90px; height: 80px">
+			<img src="<?php echo base_url('upload/logo/'.$c['detil_sekolah']['logo']);?>" style="width: 90px">
 			</td>
-			<td style="text-align: center"><b>KEMENTERIAN AGAMA REPUBLIK INDONESIA<br>
-			KANTOR KEMENTERIAN AGAMA KABUPATEN KULON PROGO<br>
-			<?php echo strtoupper($this->config->item('nama_sekolah')); ?><br></b>
-			<span style="font-size: 10pt">Alamat : <?php echo strtoupper($this->config->item('alamat_sekolah')); ?>. <br>
-			Telp : 0811 267 5969 | Web : http://mtsn-sidoharjo.sch.id/</span>
+			<td style="text-align: center"><b><?=$c['detil_sekolah']['kop_1'];?><br>
+			<b><?=$c['detil_sekolah']['kop_2'];?><br>
+			<?php echo strtoupper($c['detil_sekolah']['nama_sekolah']); ?><br></b>
+			<span style="font-size: 10pt">Alamat : <?php echo strtoupper($c['detil_sekolah']['alamat'].", ".$c['detil_sekolah']['desa'].", ".$c['detil_sekolah']['kec']); ?>. <br>
+			Telp : <?php echo $c['detil_sekolah']['telp'].", Web : ".$c['detil_sekolah']['web']; ?></span>
 			</td>
 		</tr>
 		<tr><td colspan="2"><hr style="border: solid 2px #000"></td></tr>
@@ -71,14 +71,11 @@
 	<br><br>
 	<div style="margin-left: 20%; display: inline; float: left; width: 3cm; height: 3.7cm; border: solid 1px #000"></div>
 	<div style="margin-left: 120px; display: inline; float: left;">
-		Sidoharjo, <?php echo tjs($ds['diterima_tgl'],"l"); ?><br>
-		Kepala Madrasah<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<b><u>Drs. Sukarlan</u></b><br>
-		NIP. 19650422 200012 1 001
+		<?php echo $c['sekolah_kota'].", ".tjs($ds['diterima_tgl'],"l"); ?><br>
+		<?php echo $c['sekolah_sebutan_kepala']." ".$c['sekolah_nama']; ?> <br>
+		<br><br><br><br>
+		<u><b><?php echo $c['ta_kepsek_nama']; ?></b></u><br>
+		NIP. <?php echo $c['ta_kepsek_nip']; ?>
 	</div>
 
 	

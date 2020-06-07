@@ -30,7 +30,7 @@
 		<br>
 		<b>LAPORAN</b><br><br>
 		HASIL PENCAPAIAN KOMPETENSI PESERTA DIDIK<br>
-		<?php echo strtoupper($this->config->item('nama_sekolah')); ?>
+		<?php echo strtoupper($c['sekolah_nama']); ?>
 		<br>
 		<br>
 		<br>
@@ -42,47 +42,47 @@
 			<tr>
 				<td width="20%">Nama Madrasah</td>
 				<td width="2%">:</td>
-				<td width="50%"><?php echo strtoupper($this->config->item('nama_sekolah')); ?></td>
+				<td width="50%"><?php echo strtoupper($c['sekolah_nama']); ?></td>
 			</tr>
 			<tr>
 				<td>NSM/NPSN</td>
 				<td>:</td>
-				<td>12113401005/20411926</td>
+				<td><?=$c['detil_sekolah']['nss']." / ".$c['detil_sekolah']['npsn'];?></td>
 			</tr>
 			<tr>
 				<td>Alamat</td>
 				<td>:</td>
-				<td>Sumoroto, Kode Pos : 55673, <br>Telepon : 0811 267 5969</td>
+				<td><?=$c['detil_sekolah']['alamat'].", Kode Pos : ".$c['detil_sekolah']['kodepos'].", <br>Telepon : ".$c['detil_sekolah']['telp'];?></td>
 			</tr>
 			<tr>
 				<td>Kelurahan</td>
 				<td>:</td>
-				<td>Sidoharjo</td>
+				<td><?=$c['detil_sekolah']['desa'];?></td>
 			</tr>
 			<tr>
 				<td>Kecamatan</td>
 				<td>:</td>
-				<td>Samigaluh</td>
+				<td><?=$c['detil_sekolah']['kec'];?></td>
 			</tr>
 			<tr>
 				<td>Kabupaten/Kota</td>
 				<td>:</td>
-				<td>Kulon Progo</td>
+				<td><?=$c['detil_sekolah']['kab'];?></td>
 			</tr>
 			<tr>
 				<td>Propinsi</td>
 				<td>:</td>
-				<td>Daerah Istimewa Yogyakarta</td>
+				<td><?=$c['detil_sekolah']['prov'];?></td>
 			</tr>
 			<tr>
 				<td>Website</td>
 				<td>:</td>
-				<td>www.mtsn-sidoharjo.sch.id</td>
+				<td><?=$c['detil_sekolah']['web'];?></td>
 			</tr>
 			<tr>
 				<td>Email</td>
 				<td>:</td>
-				<td>mtsn.sidoharjo@gmail.com</td>
+				<td><?=$c['detil_sekolah']['email'];?></td>
 			</tr>
 		</table>
 

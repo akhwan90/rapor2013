@@ -39,8 +39,8 @@
                                     <a href="<?php echo base_url().$url."/sampul1/".$sk['id_siswa']; ?>" class="btn btn-success btn-sm" target="_blank"><i  class="fa fa-print"></i> S 1</a>
                                     <a href="<?php echo base_url().$url."/sampul2/".$sk['id_siswa']; ?>" class="btn btn-success btn-sm" target="_blank"><i  class="fa fa-print"></i> S 2</a>
                                     <a href="<?php echo base_url().$url."/sampul4/".$sk['id_siswa']; ?>" class="btn btn-success btn-sm" target="_blank"><i  class="fa fa-print"></i> S 4</a>
-                                    <a href="<?php echo base_url().$url."/cetak/".$sk['id_siswa']."/".$tasm; ?>" class="btn btn-success btn-sm" target="_blank"><i  class="fa fa-print"></i> Raport</a>
-                                    <a href="<?php echo base_url().$url."/prestasi_catatan/".$sk['id_siswa']."/".$tasm; ?>" class="btn btn-success btn-sm" target="_blank"><i  class="fa fa-print"></i> Prestasi&Catatan</a>
+                                    <a href="<?php echo base_url().$url."/cetak/".$sk['id_siswa']."/".$c['ta_tasm']; ?>" class="btn btn-success btn-sm" target="_blank"><i  class="fa fa-print"></i> Raport</a>
+                                    <a href="<?php echo base_url().$url."/prestasi_catatan/".$sk['id_siswa']."/".$c['ta_tasm']; ?>" class="btn btn-success btn-sm" target="_blank"><i  class="fa fa-print"></i> Prestasi&Catatan</a>
                                 </td>
                             </tr>
                         <?php 

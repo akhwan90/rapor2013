@@ -69,11 +69,16 @@ class Home extends Master {
         $this->load->view("template_utama", $this->d);
     }
     public function simpan_ubah_password() {
-        $id_user = $this->session->userdata('app_rapot_id');
-        $cek_user = $this->db->query("SELECT id, username, password FROM m_admin WHERE id = $id_user")->row_array();
+        $id_user = $this->d['s']['id'];
+        $this->db->where('id', $id_user);
+        $cek_user = $this->db->get("m_admin")->row_array();
+
         $p = $this->input->post();
+        
         $plama = sha1(sha1($p['p1']));
         $d = array();
+
+
         if (empty($cek_user)) {
             $d['status'] = "gagal";
             $d['data'] = "User tidak ditemukan";
@@ -90,7 +95,11 @@ class Home extends Master {
             $d['status'] = "gagal";
             $d['data'] = "Password baru tidak sama";
         } else {
-            $this->db->query("UPDATE m_admin SET password = '".sha1(sha1($p['p2']))."' WHERE id = '".$id_user."'");
+            $this->db->where('id', $id_user);
+            $this->db->update('m_admin', [
+                'password'=>sha1(sha1($p['p2']))
+            ]);
+            
             $d['status'] = "ok";
             $d['data'] = "Password berhasil diubah";
         }

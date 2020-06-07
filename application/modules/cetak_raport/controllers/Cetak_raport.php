@@ -1,25 +1,20 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
+require_once(APPPATH . "controllers/Master.php");
 
-class Cetak_raport extends CI_Controller {
+class Cetak_raport extends Master {
     function __construct() {
         parent::__construct();
-        $this->sespre = $this->config->item('session_name_prefix');
-
-        $this->d['admlevel'] = $this->session->userdata($this->sespre.'level');
-        $this->d['admkonid'] = $this->session->userdata($this->sespre.'konid');
-        $this->d['url'] = "cetak_raport";
-
-        $get_tasm = $this->db->query("SELECT tahun, nama_kepsek, nip_kepsek, tgl_raport FROM tahun WHERE aktif = 'Y'")->row_array();
-        $this->d['tasm'] = $get_tasm['tahun'];
-        $this->d['ta'] = substr($get_tasm['tahun'],0,4);
-
-        $this->d['wk'] = $this->session->userdata('app_rapot_walikelas');   
-        
         cek_aktif();
+
+        $akses = array("guru");
+        cek_hak_akses($this->d['s']['level'], $akses);
+        
+        $this->d['url'] = "cetak_raport";
     }
 
     public function sampul1($id_siswa) {
+        $d['c'] = $this->d['c'];
         $d['ds'] = $this->db->query("SELECT nama, nis, nisn FROM m_siswa WHERE id = '$id_siswa'")->row_array();
 
         $this->load->view('cetak_sampul1', $d);
@@ -27,12 +22,12 @@ class Cetak_raport extends CI_Controller {
     }
 
     public function sampul2($id_siswa) {
-        $d = null;
-
+        $d['c'] = $this->d['c'];
         $this->load->view('cetak_sampul2', $d);
     }
 
     public function sampul4($id_siswa) {
+        $d['c'] = $this->d['c'];
         $d['ds'] = $this->db->query("SELECT * FROM m_siswa WHERE id = '$id_siswa'")->row_array();
 
         $this->load->view('cetak_sampul4', $d);
@@ -56,9 +51,6 @@ class Cetak_raport extends CI_Controller {
                                     FROM t_naikkelas a 
                                     WHERE a.id_siswa = $id_siswa AND a.ta = '$tasm'")->row_array();
                                     
-                                    // echo $this->db->last_query();
-                                    // exit;
-                                    
         $d['prestasi'] = $q_prestasi;
         $d['catatan'] = $q_catatan;
 
@@ -68,9 +60,8 @@ class Cetak_raport extends CI_Controller {
     public function cetak($id_siswa,$tasm) {
         $d = array();
         
-        
-        $d['semester'] = substr($tasm, 4, 1);
-        $d['ta'] = (substr($tasm, 0, 4))."/".(substr($tasm, 0, 4)+1);
+        $d['semester'] = $this->d['c']['ta_semester'];
+        $d['ta'] = $this->d['c']['ta_tahun'];
         
         $siswa = $this->db->query("SELECT 
                                     a.nama, a.nis, a.nisn, c.tingkat, c.id idkelas
@@ -87,7 +78,7 @@ class Cetak_raport extends CI_Controller {
                                 FROM t_walikelas a 
                                 INNER JOIN m_guru b ON a.id_guru = b.id 
                                 INNER JOIN m_kelas c ON a.id_kelas = c.id
-                                WHERE a.id_kelas = '".$d['det_siswa']['idkelas']."' AND a.tasm = '".$this->d['ta']."'")->row_array();
+                                WHERE a.id_kelas = '".$siswa['idkelas']."' AND a.tasm = '".$this->d['c']['ta_tasm']."'")->row_array();
     
         // Start NILAI PENGETAHUAN //
         $ambil_np = $this->db->query("SELECT 
@@ -492,22 +483,21 @@ class Cetak_raport extends CI_Controller {
             //}
         //}
         $d['det_raport'] = $get_tasm = $this->db->query("SELECT tahun, nama_kepsek, nip_kepsek, tgl_raport, tgl_raport_kelas3 FROM tahun WHERE tahun = '$tasm'")->row_array();
-        
-        
+
+        $d['c'] = $this->d['c'];
+        $d['s'] = $this->d['s'];
+
         $this->load->view('cetak_rapot', $d);
     }
 
 
 
     public function index() {
-
-        $wali = $this->session->userdata($this->sespre."walikelas");
-
         $this->d['siswa_kelas'] = $this->db->query("SELECT 
                                                 a.id_siswa, b.nama
                                                 FROM t_kelas_siswa a
                                                 INNER JOIN m_siswa b ON a.id_siswa = b.id
-                                                WHERE a.id_kelas = '".$wali['id_walikelas']."' AND a.ta = '".$this->d['ta']."'")->result_array();
+                                                WHERE a.id_kelas = '".$this->d['s']['walikelas']['id_walikelas']."' AND a.ta = '".$this->d['c']['ta_tahun']."'")->result_array();
 
     	$this->d['p'] = "list";
         $this->load->view("template_utama", $this->d);

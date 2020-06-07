@@ -1,13 +1,15 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-class Riwayat_mengajar extends CI_Controller {
+require_once(APPPATH . "controllers/Master.php");
+
+class Riwayat_mengajar extends Master {
 	function __construct() {
         parent::__construct();
         cek_aktif();
 
-        $this->sespre = $this->config->item('session_name_prefix');
-        $this->d['admlevel'] = $this->session->userdata($this->sespre.'level');
-        $this->d['admkonid'] = $this->session->userdata($this->sespre.'konid');
+        $akses = array("guru");
+        cek_hak_akses($this->d['s']['level'], $akses);
+
         $this->d['url'] = "data_siswa";
         $this->d['idnya'] = "datasiswa";
         $this->d['nama_form'] = "f_datasiswa";
@@ -20,7 +22,7 @@ class Riwayat_mengajar extends CI_Controller {
                         FROM t_guru_mapel a 
                         INNER JOIN m_mapel b ON a.id_mapel = b.id
                         INNER JOIN m_kelas c ON a.id_kelas = c.id
-                        WHERE a.id_guru = '".$this->d['admkonid']."'")->result_array();
+                        WHERE a.id_guru = '".$this->d['s']['konid']."'")->result_array();
         
         // echo $this->db->last_query();
         // exit;

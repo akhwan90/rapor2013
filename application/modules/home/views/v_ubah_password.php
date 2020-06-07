@@ -29,14 +29,15 @@
 </div>
 
 <script type="text/javascript">
-    $("#f_ubah_password").on("submit", function() {
+    $("#f_ubah_password").on("submit", function(e) {
+        e.preventDefault();
 
         var data    = $(this).serialize();
 
         $.ajax({
             type: "POST",
             data: data,
-            url: base_url+"<?php echo $url; ?>/simpan_ubah_password",
+            url: base_url+"home/simpan_ubah_password",
             success: function(r) {
                 if (r.status == "gagal") {
                     noti("danger", r.data);

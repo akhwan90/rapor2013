@@ -39,16 +39,16 @@
 			<td colspan="6" style="text-align: center; font-weight: bold"><p><h3>HASIL PENCAPAIAN KOMPETENSI PESERTA DIDIK</h3></p></td>
 		</tr>
 		<tr>
-			<td width="20%">Nama Madrasah</td><td width="1%">:</td><td width="39%" class="tbl"><?php echo $this->config->item('nama_sekolah'); ?></td>
+			<td width="20%">Nama Madrasah</td><td width="1%">:</td><td width="39%" class="tbl"><?php echo $c['sekolah_nama']; ?></td>
 			<td width="20%">Kelas</td><td width="1%">:</td><td width="19%" class="tbl"><?php echo strtoupper($wali_kelas['nmkelas']); ?></td>
 		</tr>
 		<tr>
-			<td>Alamat Madrasah</td><td>:</td><td class="tbl"><?php echo $this->config->item('alamat_sekolah'); ?></td>
+			<td>Alamat Madrasah</td><td>:</td><td class="tbl"><?php echo $c['sekolah_alamat']; ?></td>
 			<td>Semester</td><td>:</td><td class="tbl"><?php echo $semester; ?></td>
 		</tr>
 		<tr>
 			<td>Nama Siswa</td><td>:</td><td class="tbl"><?php echo $det_siswa['nama']; ?></td>
-			<td>Tahun Pelajaran</td><td>:</td><td class="tbl"><?php echo $ta; ?></td>
+			<td>Tahun Pelajaran</td><td>:</td><td class="tbl"><?php echo $ta.'/'.($ta+1); ?></td>
 		</tr>
 		<tr>
 			<td>NIS / NISN</td><td>:</td><td class="tbl"><?php echo $det_siswa['nis']." / ".$det_siswa['nisn']; ?></td>
@@ -215,14 +215,14 @@
 						    <?php 
 						    if ($wali_kelas['tingkat'] != 9) {
 						    ?>
-							<?php echo $this->config->item('kota_sekolah'); ?>, <?php echo tjs($det_raport['tgl_raport'],"l"); ?><br>
+							<?php echo $c['sekolah_kota']; ?>, <?php echo tjs($det_raport['tgl_raport'],"l"); ?><br>
 							<?php } else { ?>
-							<?php echo $this->config->item('kota_sekolah'); ?>, <?php echo tjs($det_raport['tgl_raport_kelas3'],"l"); ?><br>
+							<?php echo $c['sekolah_kota']; ?>, <?php echo tjs($det_raport['tgl_raport_kelas3'],"l"); ?><br>
 							<?php } ?>
-							Kepala <?php echo $this->config->item('nama_sekolah'); ?> <br>
+							<?php echo $c['sekolah_sebutan_kepala']." ".$c['sekolah_nama']; ?> <br>
 							<br><br><br><br>
-							<u><b><?php echo $det_raport['nama_kepsek']; ?></b></u><br>
-							NIP. <?php echo $det_raport['nip_kepsek']; ?>
+							<u><b><?php echo $c['ta_kepsek_nama']; ?></b></u><br>
+							NIP. <?php echo $c['ta_kepsek_nip']; ?>
 						</td>
 					</tr>
 				</table>
