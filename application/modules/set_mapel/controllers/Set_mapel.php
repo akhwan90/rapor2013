@@ -31,7 +31,7 @@ class Set_mapel extends Master {
                                         ORDER BY nmguru ASC, nmmapel ASC, nmkelas ASC")->num_rows();
     
         $q_datanya = $this->db->query("SELECT
-                                    a.id, b.nama nmguru, c.nama nmkelas, d.nama nmmapel
+                                    a.id, a.kkm, b.nama nmguru, c.nama nmkelas, d.nama nmmapel
                                     FROM t_guru_mapel a
                                     INNER JOIN m_guru b ON a.id_guru = b.id
                                     INNER JOIN m_kelas c ON a.id_kelas = c.id
@@ -47,11 +47,12 @@ class Set_mapel extends Master {
 
         foreach ($q_datanya as $d) {
             $data_ok = array();
-            $data_ok[0] = $no++;
-            $data_ok[1] = $d['nmguru'];
-            $data_ok[2] = $d['nmmapel']." - ".$d['nmkelas'];
+            $data_ok[] = $no++;
+            $data_ok[] = $d['nmguru'];
+            $data_ok[] = $d['nmmapel']." - ".$d['nmkelas'];
+            $data_ok[] = $d['kkm'];
 
-            $data_ok[3] = '<a href="#" onclick="return hapus(\''.$d['id'].'\');" class="btn btn-xs btn-danger"><i class="fa fa-remove"></i> Hapus</a> ';
+            $data_ok[] = '<a href="#" onclick="return hapus(\''.$d['id'].'\');" class="btn btn-xs btn-danger"><i class="fa fa-remove"></i> Hapus</a> ';
 
             $data[] = $data_ok;
         }
@@ -153,6 +154,12 @@ class Set_mapel extends Master {
     public function index() {
     	$this->d['p'] = "list";
         $this->load->view("template_utama", $this->d);
+    }
+
+    public function predikat_nilai($kkm, $nilai) {
+        $predikat = predikat_nilai($kkm, $nilai);
+
+        j($predikat);
     }
 
 }

@@ -28,8 +28,22 @@
             </div>
             <div class="content">
                 <ul class="list-group" id="list_kd">
-                    <div id="list_kd_2" style="margin-bottom: 10px"></div>
-                    
+                    <?php 
+                    if (!empty($list_kd)) {
+                        foreach ($list_kd as $lk) {
+                    ?>
+                    <li class="list-group-item" data-idkd="<?php echo $lk['id'];?>" data-idkelas="<?=$detil_mp['id_kelas'];?>">
+                        <a href="#" onclick="return view_kd(<?php echo $lk['id'].", ".$detil_mp['id_kelas']; ?>);"><?php echo "(".$lk['no_kd'].") ".$lk['nama_kd'].""; ?></a>
+                    </li>
+                    <?php 
+                        }
+                    } else {
+                        echo '<li class="list-group-item">Belum ada KD diinputkan</li>';
+                    }
+                    ?>
+                </ul>
+                
+                <ul class="list-group"> 
                     <li class="list-group-item" onclick="return view_kd(<?php echo $detil_mp['id_mapel'].", ".$detil_mp['id_kelas']; ?>,'t');"><a href="#"><i class="fa fa-chevron-right"></i>  ULANGAN TENGAH SEMESTER</a></li>
                     <li class="list-group-item" onclick="return view_kd(<?php echo $detil_mp['id_mapel'].", ".$detil_mp['id_kelas']; ?>,'a');"><a href="#"><i class="fa fa-chevron-right"></i>  ULANGAN AKHIR SEMESTER</a></li>
                 </ul>
@@ -39,7 +53,7 @@
     <div class="col-md-7">
         <div class="card">
             <div class="header">
-                <h4 class="title">Input Nilai </h4>
+                <h4 class="title">Input Nilai (KKM: <?=$detil_mp['kkm'];?>)</h4>
             </div>
             <div class="content">
                 <form name="f_input_nilai" method="post" action="#" id="f_input_nilai">
@@ -97,7 +111,19 @@
     id_guru_mapel = <?php echo $this->uri->segment(3); ?>;
     $(document).on("ready", function() {
         view_kd(0,0);
-        list_kd();
+        
+        $('#list_kd li').on('click', function(){
+            $('li.active').removeClass('active');
+            $(this).addClass('active');
+            let idkd = $(this).data('idkd');
+            let idkelas = $(this).data('idkelas');
+            view_kd(idkd, idkelas);
+        });
+        
+        $('#list_kd li').on('click', function(){
+            $('li.active').removeClass('active');
+            $(this).addClass('active');
+        });
 
         $("#f_input_nilai").on("submit", function() {
             var data    = $(this).serialize();
@@ -107,10 +133,13 @@
                 data: data,
                 url: base_url+"<?php echo $url; ?>/simpan_nilai",
                 beforeSend: function(){
-                    $("#f_input_nilai input select button").attr("disabled", true);
+                    $("#tbSimpan").attr("disabled", true);
+                    $("#tbSimpan").html("<i class='fa fa-spin fa-spinner'></i> Menyimpan");
                 },
                 success: function(r) {
-                    $("#f_input_nilai input select button").attr("disabled", true);
+                    $("#tbSimpan").attr("disabled", false);
+                    $("#tbSimpan").html("<i class='fa fa-check'></i> Simpan");
+
                     if (r.status == "gagal") {
                         noti("danger", r.data);
                     } else {
@@ -119,7 +148,8 @@
                     }
                 },
                 error: function(x) {
-                    $("#f_input_nilai input select button").attr("disabled", true);
+                    $("#tbSimpan").attr("disabled", false);
+                    $("#tbSimpan").html("<i class='fa check'></i> Simpan");
                     noti(x);
                 }
             });
@@ -196,36 +226,12 @@
         }
         return false;
     }
-    function simpan_kd() {
-        var data    = $("#f_setmapel").serialize();
-    
-        $.ajax({
-            type: "POST",
-            data: data,
-            url: base_url+"set_kd/simpan",
-            beforeSend: function(){
-                $("#tbSimpanKd").attr("disabled", true);
-            },
-            success: function(r) {
-                $("#tbSimpanKd").attr("disabled", false);
-                if (r.status == "gagal") {
-                    noti("danger", r.data);
-                } else {
-                    $("#modal_data").modal('hide');
-                    noti("success", r.data);
-                    list_kd();
-                }
-            }
-        });
-        return false;
-    }
-
     function list_kd() {
         $.ajax({
             type: "GET",
             url: base_url+"n_pengetahuan/list_kd/"+id_guru_mapel,
             beforeSend: function() {
-                $("#list_kd_2").html('<i class="fa fa-spin fa-spinner"></i> Loading');
+                $("#list_kd").html('<li class="list-group-item"><i class="fa fa-spin fa-spinner"></i> Loading</li>');
             },
             success: function(data) {
                 var h = '';
@@ -236,10 +242,10 @@
                         // i = '<div class="pull-right"><a href="#" onclick="return edit('+v.id+');" class="btn btn-xs btn-success"><i class="fa fa-pencil"></i> </a><a href="#" onclick="return hapus('+v.id+');" class="btn btn-xs btn-danger"><i class="fa fa-remove"></i> </a></div></li>';
                     });
                 } else {
-                    h += '<div class="alert alert-info">KD Belum satupun diinputkan</div>';
+                    h += '<li class="list-group-item">KD Belum satupun diinputkan</li>';
                 }
 
-                $("#list_kd_2").html(h);
+                $("#list_kd").html(h);
             }
         });   
     }

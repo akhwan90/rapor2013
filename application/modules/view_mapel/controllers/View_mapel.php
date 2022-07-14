@@ -16,14 +16,17 @@ class View_mapel extends Master {
         $this->d['idnya'] = "viewmapel";
         $this->d['nama_form'] = "f_view_mapel";
     }
+
     public function index() {
     	$this->d['list_mapelkelas'] = $this->db->query("SELECT 
-                                                a.id, b.kd_singkat nmmapel, a.id_mapel, a.id_kelas, c.nama nmkelas, b.is_sikap
-                                                FROM t_guru_mapel a
-                                                INNER JOIN m_mapel b ON a.id_mapel = b.id
-                                                INNER JOIN m_kelas c ON a.id_kelas = c.id 
-                                                WHERE a.id_guru = '".$this->d['s']['konid']."'
-                                                AND a.tasm = '".$this->d['c']['ta_tasm']."'") ->result_array();
+                                    a.id, a.id_mapel, a.id_kelas, a.kkm,
+                                    b.kd_singkat nmmapel, b.is_sikap,
+                                    c.nama nmkelas
+                                    FROM t_guru_mapel a
+                                    INNER JOIN m_mapel b ON a.id_mapel = b.id
+                                    INNER JOIN m_kelas c ON a.id_kelas = c.id 
+                                    WHERE a.id_guru = '".$this->d['s']['konid']."'
+                                    AND a.tasm = '".$this->d['c']['ta_tasm']."'") ->result_array();
         $this->d['p'] = "v_view_mapel";
         $this->load->view("template_utama", $this->d);
     }
@@ -117,5 +120,22 @@ class View_mapel extends Master {
 
         $this->d['html'] = $html;
         $this->load->view('cetak_absensi', $this->d);
+    }
+
+    public function simpan_kkm() {
+        $p = $this->input->post();
+
+        $this->db->where('id', intval($p['_id']));
+        $this->db->update('t_guru_mapel', ['kkm'=>intval($p['nilai_kkm'])]);
+
+        j(['success'=>true, 'message'=>'Disimpan']);
+        exit;
+    }
+
+    public function detil_rentang_kkm($kkm) {
+        $predikat = predikat_nilai($kkm, $kkm);
+
+        j($predikat);
+        exit;
     }
 }

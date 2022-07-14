@@ -11,6 +11,7 @@
                     <div class="panel-body">
                         <a href="<?php echo base_url().$url; ?>/edit/0" class="btn btn-success">Tambah</a> &nbsp;
                         <a href="<?php echo base_url().$url; ?>/copy_semester_lalu" class="btn btn-success" onclick="return confirm('Anda yakin..? Cek dulu apakah Anda sudah menginput data pada semester ini..? Jika iya, maka data akan dihapus..!');">Copy Semester Lalu</a> &nbsp;
+                        <!-- <a href="<?php echo base_url().$url; ?>/lihat_predikat" class="btn btn-success">Lihat Predikat KKM</a> -->
                     </div>
                 </div>
 
@@ -20,7 +21,8 @@
                     <thead>
                         <td width="10%">No</td>
                         <td width="20%">Nama Guru</td>
-                        <td width="50%">Mata Pelajaran - Kelas</td>
+                        <td width="40%">Mata Pelajaran - Kelas</td>
+                        <td width="10%">KKM</td>
                         <td width="20%">Aksi</td>
                     </thead>
 

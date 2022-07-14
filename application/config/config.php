@@ -7,7 +7,6 @@ $config['base_url'] = 'http://localhost/rapor2013/';
 // Config tambahan 
 // =================
 
-
 // config porsi nilai
 $config['pnp_h'] = 2; // porsi nilai ulangan harian
 $config['pnp_t'] = 1; // porsi nilai UTS
@@ -17,9 +16,6 @@ $config['pnp_a'] = 1; // porsi nilai UAS
 $config['kkm'] = 70;
 $config['session_name_prefix'] = "app_rapot_";
 $config['is_kemenag'] = TRUE;
-$config['nama_sekolah'] = "MTs Negeri 5 Kulon Progo";
-$config['alamat_sekolah'] = "Sumoroto, Sidoharjo, Samigaluh";
-$config['kota_sekolah'] = "Kulon Progo";
 
 $config['p_tingkat'] = [
     '7'=>'Kelas 7',

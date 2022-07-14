@@ -34,11 +34,8 @@
                     if (!empty($list_kd)) {
                         foreach ($list_kd as $lk) {
                     ?>
-                    <li class="list-group-item"><a href="#" onclick="return view_kd(<?php echo $lk['id'].", ".$detil_mp['id_kelas']; ?>);"><?php echo "(".$lk['no_kd'].") ".$lk['nama_kd'].""; ?></a>
-                        <!-- <div class="pull-right">
-                            <a href="#" onclick="return edit(<?php echo $lk['id']; ?>);" class="btn btn-xs btn-success"><i class="fa fa-pencil"></i></a>
-                            <a href="#" onclick="return hapus(<?php echo $lk['id']; ?>);" class="btn btn-xs btn-danger"><i class="fa fa-remove"></i></a>
-                        </div> -->
+                    <li class="list-group-item" data-idkd="<?php echo $lk['id'];?>" data-idkelas="<?=$detil_mp['id_kelas'];?>">
+                        <a href="#" onclick="return view_kd(<?php echo $lk['id'].", ".$detil_mp['id_kelas']; ?>);"><?php echo "(".$lk['no_kd'].") ".$lk['nama_kd'].""; ?></a>
                     </li>
                     <?php 
                         }
@@ -108,7 +105,13 @@
 <script type="text/javascript">
     id_guru_mapel = <?php echo $this->uri->segment(3); ?>;
     $(document).on("ready", function() {
-        view_kd(0,0);
+        $('#list_kd li').on('click', function(){
+            $('li.active').removeClass('active');
+            $(this).addClass('active');
+            let idkd = $(this).data('idkd');
+            let idkelas = $(this).data('idkelas');
+            view_kd(idkd, idkelas);
+        });
 
         $("#f_input_nilai").on("submit", function() {
             var data    = $(this).serialize();
@@ -118,10 +121,12 @@
                 data: data,
                 url: base_url+"<?php echo $url; ?>/simpan_nilai",
                 beforeSend: function(){
-                    $("#f_input_nilai input select button").attr("disabled", true);
+                    $("#tbSimpan").attr("disabled", true);
+                    $("#tbSimpan").html("<i class='fa fa-spin fa-spinner'></i> Menyimpan");
                 },
                 success: function(r) {
-                    $("#f_input_nilai input select button").attr("disabled", false);
+                    $("#tbSimpan").attr("disabled", false);
+                    $("#tbSimpan").html("<i class='fa fa-check'></i> Simpan");
 
                     if (r.status == "gagal") {
                         noti("danger", r.data);
@@ -130,7 +135,8 @@
                     }
                 },
                 error: function(x) {
-                    $("#f_input_nilai input select button").attr("disabled", false);
+                    $("#tbSimpan").attr("disabled", false);
+                    $("#tbSimpan").html("<i class='fa check'></i> Simpan");
                     console.log(x);
                 }
             });
@@ -153,7 +159,7 @@
                     html += '<tr><td>'+i+'</td><td>'+v.nama+'</td><td><input name="id_siswa[]" type="hidden" value="'+v.ids+'"><input name="nilai[]" type="number" min="0" max="100" class="form-control input-sm" value="'+v.nilai+'" required></td></tr>';
                     i++;
                 }); 
-                html += '</tbody></table><p><button type="submit" class="btn btn-success"><i class="fa fa-check"></i> Simpan</button> &nbsp; <a href="#" onclick="return view_kd(0, 0);" class="btn btn-warning"><i class="fa fa-minus-circle"></i> Batal</a></p>';
+                html += '</tbody></table><p><button type="submit" class="btn btn-success" id="tbSimpan"><i class="fa fa-check"></i> Simpan</button> &nbsp; <a href="#" onclick="return view_kd(0, 0);" class="btn btn-warning"><i class="fa fa-minus-circle"></i> Batal</a></p>';
                 $("#load_nilai").html(html);
             });
             

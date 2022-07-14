@@ -597,8 +597,8 @@ class N_pengetahuan extends Master {
                                         INNER JOIN m_kelas c ON a.id_kelas = c.id 
                                         WHERE a.id  = '$id'")->row_array();
         $this->d['list_kd'] = $this->db->query("SELECT * FROM t_mapel_kd 
-                                    WHERE id_guru = '".$this->d['detil_mp']['id_guru']."'
-                                    AND id_mapel = '".$this->d['detil_mp']['id_mapel']."'
+                                    WHERE 
+                                    id_mapel = '".$this->d['detil_mp']['id_mapel']."'
                                     AND tingkat = '".$this->d['detil_mp']['tingkat']."'
                                     AND semester = '".$this->d['c']['ta_semester']."'
                                     AND jenis = 'P'")->result_array();

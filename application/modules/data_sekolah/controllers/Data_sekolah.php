@@ -48,7 +48,7 @@ class Data_sekolah extends Master {
             // get sebelum 
             $this->db->where('id', 1);
             $this->db->select('logo');
-            $get_gambar = $this->db->get('m_sekolah');
+            $get_gambar = $this->db->get('m_sekolah')->row_array();
 
             @unlink('./upload/logo/'.$get_gambar['logo']);
 

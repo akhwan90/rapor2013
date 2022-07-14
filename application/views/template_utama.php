@@ -133,10 +133,14 @@
             </div>
             <ul class="nav">
                 <?php 
-                $level = $this->session->userdata("level");
-                $walikelas = $this->session->userdata("walikelas");
+                if ($this->session->userdata('valid')) {
+                    $level = $this->session->userdata("level");
+                    $walikelas = $this->session->userdata("walikelas");
 
-                echo generate_menu($level, $walikelas['is_wali']);  
+                    echo generate_menu($level, $walikelas['is_wali']);  
+                } else {
+                    echo generate_menu('belum_login');
+                }
                 ?>
             </ul>
             
@@ -161,7 +165,7 @@
                         
                         if ($this->session->userdata("valid") == true) {
                         ?>
-                        <li><a href="#">Login Sebagai : <?php echo $this->session->userdata("user"); ?> </a></li>
+                        <li><a href="#">Login Sebagai : <?php echo $this->session->userdata("nama"); ?> </a></li>
                         <li>
                             <a href="<?php echo base_url(); ?>login/logout" onclick="return hilangkan_gambar();">
                                 Log out
@@ -180,10 +184,10 @@
         <footer class="footer">
             <div class="container-fluid">
                 <p class="copyright pull-left">
-                    <b><?php echo $c['sekolah_nama']; ?></b>
+                    <b><?php echo $c['sekolah_nama']; ?></b> - <strong>Tahun Ajaran Aktif: <?=$c['ta_tasm'];?></strong>
                 </p>
                 <p class="copyright pull-right">
-                    <strong>Tahun Ajaran Aktif: <?=$c['ta_tasm'];?></strong>. Waktu proses {elapsed_time} detik. &copy; 2016 
+                    Proses {elapsed_time} detik. &copy; 2016 
                 </p>
             </div>
         </footer>

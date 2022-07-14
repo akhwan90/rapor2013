@@ -78,7 +78,6 @@ class Home extends Master {
         $plama = sha1(sha1($p['p1']));
         $d = array();
 
-
         if (empty($cek_user)) {
             $d['status'] = "gagal";
             $d['data'] = "User tidak ditemukan";
@@ -99,7 +98,7 @@ class Home extends Master {
             $this->db->update('m_admin', [
                 'password'=>sha1(sha1($p['p2']))
             ]);
-            
+
             $d['status'] = "ok";
             $d['data'] = "Password berhasil diubah";
         }

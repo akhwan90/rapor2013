@@ -247,3 +247,64 @@ function potong($teks) {
 
 	return $tekss;
 }
+
+function predikat_nilai($kkm, $nilai) {
+    $selisih_nilai_max_kkm = (100 - $kkm);
+    $rentang_asli = ($selisih_nilai_max_kkm / 3);
+    $rentang = round($rentang_asli);
+
+    $selisih_rentang_rentang_asli = $rentang_asli - floor($rentang_asli);
+
+    if ($selisih_rentang_rentang_asli < 0.5 && $selisih_rentang_rentang_asli > 0) {
+        $penambah1 = $rentang - 1;
+        $penambah2 = $rentang;
+        $penambah3 = $rentang;
+    } else if ($selisih_rentang_rentang_asli > 0.5) {
+        $penambah1 = $rentang - 1;
+        $penambah2 = $rentang - 1;
+        $penambah3 = $rentang - 1;
+    } else {
+        $penambah1 = $rentang - 1;
+        $penambah2 = $rentang - 1;
+        $penambah3 = $rentang;
+    }
+
+    $awal_c = $kkm;
+    $akhir_c = ($kkm + $penambah1);
+    $awal_b = $akhir_c + 1;
+    $akhir_b = ($awal_b + $penambah2);
+    $awal_a = $akhir_b + 1;
+    $akhir_a = ($awal_a + $penambah3);
+
+    if ($nilai < $awal_c) {
+        $predikat_huruf = "D";
+        $predikat = "Kurang";
+    } else if ($nilai >= $awal_c && $nilai <= $akhir_c) {
+        $predikat_huruf = "C";
+        $predikat = "Cukup";
+    } else if ($nilai >= $awal_b && $nilai <= $akhir_b) {
+        $predikat_huruf = "B";
+        $predikat = "Baik";
+    } else if ($nilai >= $awal_a && $nilai <= $akhir_a) {
+        $predikat_huruf = "A";
+        $predikat = "Sangat Baik";
+    } else {
+        $predikat_huruf = "-";
+        $predikat = "-";
+    }
+
+    $keterangan = [
+        'd' => "Kurang dari ".$awal_c,
+        'c' => $awal_c." - ".$akhir_c.", gap : ".($akhir_c-$awal_c),
+        'b' => $awal_b." - ".$akhir_b.", gap : ".($akhir_b-$awal_b),
+        'a' => $awal_a." - ".$akhir_a.", gap : ".($akhir_a-$awal_a),
+    ];
+
+    $ret = [
+        'predikat_huruf'=>$predikat_huruf,
+        'predikat'=>$predikat,
+        'keterangan'=>$keterangan,
+    ];
+
+    return $ret;
+}

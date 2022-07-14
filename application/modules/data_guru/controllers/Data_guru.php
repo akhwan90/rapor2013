@@ -42,7 +42,7 @@ class Data_guru extends Master {
             $data_ok = array();
             $data_ok[0] = $no++;
             $data_ok[1] = $d['nip'];
-            $data_ok[2] = $d['jml_aktif'] > 0 ? $d['nama']." / <b><i>".$d['username']."</i></b> / <b><i>guru123</i></b>" : $d['nama'];
+            $data_ok[2] = $d['jml_aktif'] > 0 ? $d['nama']." / <b><i>".$d['username']."</i></b> / <b><i>guruhebat</i></b>" : $d['nama'];
             $data_ok[3] = $d['jml_aktif'] > 0 ? '<span class="label label-success">Aktif</span>' : '<span class="label label-warning">Belum Aktif</span>';
 
             $link_aktif_user = $d['jml_aktif'] > 0 ? '<a href="#" onclick="return nonaktifkan(\''.$d['id'].'\');" class="btn btn-xs btn-warning"><i class="fa fa-user"></i> NonAktifkan User</a>' : '<a href="#" onclick="return aktifkan(\''.$d['id'].'\');" class="btn btn-xs btn-info"><i class="fa fa-user"></i> Aktifkan User</a>';
@@ -88,12 +88,31 @@ class Data_guru extends Master {
         $d['data'] = "";
 
         if ($p['_mode'] == "add") {
-            $this->db->query("INSERT INTO m_guru (nama, nip, is_bk) VALUES ('".$p['nama']."', '".$p['nip']."', '".$p['isbk']."')");
 
-            $d['status'] = "ok";
-            $d['data'] = "Data berhasil disimpan";
+            // cek nip 
+            $this->db->where('nip', $p['nip']);
+            $this->db->select('id');
+            $get_nip = $this->db->get('m_guru')->num_rows();
+
+            if ($get_nip < 1) {
+                $this->db->insert("m_guru", [
+                    'nama'=>$p['nama'],
+                    'nip'=>$p['nip'],
+                    'is_bk'=>$p['isbk'],
+                ]);
+
+                $d['status'] = "ok";
+                $d['data'] = "Data berhasil disimpan";
+            } else {
+                $d['status'] = "gagal";
+                $d['data'] = "NIP sudah dipakai";
+            }
         } else if ($p['_mode'] == "edit") {
-            $this->db->query("UPDATE m_guru SET nama = '".$p['nama']."', nip = '".$p['nip']."', is_bk = '".$p['isbk']."' WHERE id = '".$p['_id']."'");
+            $this->db->where('id', $p['id']);
+            $this->db->update('m_guru', [
+                'nama'=>$p['nama'],
+                'is_bk'=>$p['isbk'],
+            ]);
 
             $d['status'] = "ok";
             $d['data'] = "Data berhasil disimpan";
@@ -116,27 +135,35 @@ class Data_guru extends Master {
 
     public function aktifkan($id) {
 
-        $detil_data = $this->db->query("SELECT nama FROM m_guru WHERE id = '".$id."'")->row_array();
+        $this->db->where('id', $id);
+        $this->db->select('nip');
+        $detil_data = $this->db->get("m_guru")->row_array();
 
         if (empty($detil_data)) {
             $d['status'] = "gagal";
             $d['data'] = "Terjadi kesalahan sistem..";
         } else {
-            $username = strtolower(str_replace(array(".",","," "), array("","",""), $detil_data['nama']));
-            $password = sha1(sha1('guru123'));
+            $username = $detil_data['nip'];
+            $password = password_hash('guruhebat', PASSWORD_DEFAULT);
 
-            $username = substr($username, 0, 6);
 
-            $cek_username = $this->db->query("SELECT * FROM m_admin WHERE username = '".$username."'");
+            $this->db->where('username', $username);
+            $cek_username = $this->db->get("m_admin");
 
             $jml_username = $cek_username->num_rows();
             $jika_sudah_ada = $jml_username > 0 ? $username."_".($jml_username++) : $username;
             $username_fix = $jika_sudah_ada;
 
-            $this->db->query("INSERT INTO m_admin (username,password,level,konid,aktif) VALUES ('".$username_fix."', '".$password."', 'guru', '$id', 'Y')");
+            $this->db->insert('m_admin', [
+                'username'=>$username_fix,
+                'password'=>$password,
+                'level'=>'guru',
+                'konid'=>$id,
+                'aktif'=>'Y'
+            ]);
 
             $d['status'] = "ok";
-            $d['data'] = "Username : ".$username_fix." berhasil diaktifkan..! Password default guru123";
+            $d['data'] = "Username : ".$username_fix." berhasil diaktifkan..! Password default <b>guruhebat</b>";
         }
         
         j($d);
